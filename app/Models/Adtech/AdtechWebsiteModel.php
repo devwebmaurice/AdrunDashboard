@@ -47,21 +47,33 @@ class AdtechWebsiteModel extends Model
         
     }
     
-    public function getEditeurById($editeur)
+    public function getEditeurById($editeur, $display = null)
     {
         $params = array ( "arg0" => $editeur );
        
-        try {
+        if( is_null( $display ) ):
+            
+            try {
             $data = $this->client->getWebsiteById($params);
             ob_end_clean();
             return TRUE;
         
-        } catch (SoapFault $fault) {
+            } catch (SoapFault $fault) {
+
+               ob_end_clean();          
+               return FALSE;
+
+            }
             
-           ob_end_clean();          
-           return FALSE;
-                   
-        }
+        else:    
+            
+            $data = $this->client->getWebsiteById($params);
+        
+            return $data;
+            
+        endif;
+        
+        
         
     }
     
