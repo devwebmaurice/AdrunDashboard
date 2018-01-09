@@ -46,7 +46,7 @@ class Editeur extends Command
         flush();
        
         $ADRUN_editeurs     = AdrunWebsiteModel::getInstance()->getEditeurList();
-        $ADTECH_editeurs    = AdtechWebsiteModel::getInstance()->getADTECHWebsiteIDList()->return;
+        //$ADTECH_editeurs    = AdtechWebsiteModel::getInstance()->getADTECHWebsiteIDList()->return;
         
         //var_dump( count($ADTECH_editeurs), count($ADRUN_editeurs) );
         
@@ -58,13 +58,15 @@ class Editeur extends Command
             $input['name']   = mb_strtoupper($data->return->name);
             $input['url']    = mb_strtoupper(str_replace(array('http://','https://','/'), '', $data->return->URL));
             
-            AdrunWebsiteModel::getInstance()->updateEditeurStarter($input);
+            
+            if($data->return->name != $input['name'] && $data->return->URL != $input['url']):
+                
+                AdrunWebsiteModel::getInstance()->updateEditeurStarter($input);
+                
+            endif;
             
         endforeach;
         
-        
-        
-        
-        die('editeur');
+   
     }
 }

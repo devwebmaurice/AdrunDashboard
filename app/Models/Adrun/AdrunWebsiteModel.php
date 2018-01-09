@@ -35,7 +35,7 @@ class AdrunWebsiteModel extends Model
         $editeurs = DB::table($this->tbl_editeur . ' AS e')
             ->select('e.id AS id', 'e.id_adtech AS id_adtech','e.*')
             ->whereNotNull('id_adtech')
-            ->orderBy('e.id', 'desc')
+            ->orderBy('e.id', 'asc')
             ->get();
         
         return $editeurs;
