@@ -19,10 +19,10 @@ AD RUN a choisi AD TECH car il permet :
 
 
 ### 1.3 BUT &AMP; PRIORITÉS
-
+Le principal but de ce projet est d’améliorer considérablement la productivité de l’entreprise.
 
 ### 1.4 BUT &AMP; PRIORITÉS
-
+La cible principale est l’entreprise AD RUN. La passerelle ne devra être visible et accessible que par les employés d’AD RUN.
 
 ## 2. ARCHITECTURE GLOBALE
 
