@@ -52,6 +52,31 @@ class AdtechReportModel extends Model
         return self::$_instance;
     }
     
+    public function getReportDetailByID($id = 0, $trigger = NULL)
+    {
+        
+         $params   = array ( "arg0" => 57847009 );
+            
+                
+                    
+        try {
+                $obj = $this->client->getReportById( $params );
+
+            }
+        
+         catch (\SoapFault $e) {
+                
+                echo 'test';
+                
+            }
+            
+            
+       print_r($obj);
+        die();
+        
+    }
+    
+    
     public function generateReport($id = 0, $trigger = NULL)
     {
         
@@ -103,8 +128,6 @@ class AdtechReportModel extends Model
                 
             endif;
             
-
-        
     }
     
     public function createFlightByWebsiteReport( $slaves, $master, $start, $end )
@@ -112,9 +135,6 @@ class AdtechReportModel extends Model
         
         $file_name = $master.'_uu.xml';
         $file_url  = 'http://localhost/adrun-dashboard-v1-8/storage/report/request/'.$file_name;
-        
-        
-            
         
             if(!file_exists($this->request_folder.'/cli/'.$file_name)):
                 
