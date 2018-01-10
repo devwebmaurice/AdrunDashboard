@@ -97,7 +97,7 @@
         
         <div class="col-md-12">
             <div class="panel panel-default">
-                <div class="panel-heading">EDITEUR</div>
+                <div class="panel-heading">EDITEURS</div>
 
                 <div class="panel-body">
                     <table class="table table-bordered table-striped {{ count($editeurs) > 0 ? 'datatable' : '' }} dt-select">
@@ -121,14 +121,14 @@
                                 @foreach ($editeurs as $editeur)
                                 
 
-                                        <tr data-entry-id="{{ $editeur->id }}"  class="adrun-en-attente">
+                                        <tr data-entry-id="{{ $editeur['name']}}"  class="adrun-en-attente">
                                         <td></td>
-                                        <td>{{ mb_strtoupper(trans($editeur->name)) }}</td>
-                                        <td>{{ $editeur->regie_percentage }}</td>
-                                        <td>{{ $editeur->editeur_percentage }}</td>
+                                        <td>{{ mb_strtoupper(trans($editeur['name'])) }}</td>
+                                        <td>{{ $editeur['regie_percentage'] }}</td>
+                                        <td>{{ $editeur['editeur_percentage'] }}</td>
 <!--                                        <td>{{ App\Models\Adrun\AdrunReportModel::getInstance()->getImpression($campaign->id_adtech) }}</td>-->
-                                        <td>{{ App\Models\Adrun\AdrunWebsiteModel::getInstance()->getImpression( $editeur->id_adtech )   }}</td>
-                                        <td>{{ App\Models\Adrun\AdrunWebsiteModel::getInstance()->getClick( $editeur->id_adtech )  }}</td>
+                                        <td>{{  number_format($editeur['impression'])   }}</td>
+                                        <td>{{ number_format($editeur['click'])  }}</td>
                                         <td>{{ mb_strtoupper(trans($month->format('F'))) }}</td>
                                         <td>
                                             {!! Form::open(array(

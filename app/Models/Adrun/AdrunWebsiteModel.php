@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 use DB;
 use stdClass;
 use Carbon\Carbon;
+use App\Models\Adrun;
 
 class AdrunWebsiteModel extends Model
 {
@@ -58,13 +59,57 @@ class AdrunWebsiteModel extends Model
     public function getAllEditeursLastMonth() 
     {
         
+        $datas = [];
+        
         $editeurs = DB::table($this->tbl_editeur . ' AS e')
             ->whereNotNull('e.id_adtech')
             ->where('e.adrun', '=', 0)
             ->orderBy('e.id', 'desc')
             ->get();
         
-        return $editeurs;
+        foreach( $editeurs as $editeur ):
+            
+            $impression = AdrunWebsiteModel::getInstance()->getImpression( $editeur->id_adtech );
+            $clicks     = AdrunWebsiteModel::getInstance()->getClick( $editeur->id_adtech );
+            
+            $reps       = [
+                
+                    'impression'          => $impression,
+                    'click'               => $clicks,
+                    'name'                => $editeur->name ,
+                    'regie_percentage'    => $editeur->regie_percentage ,
+                    'editeur_percentage'  => $editeur->editeur_percentage ,
+                
+                ];
+            
+            $datas[$impression][]['data'] = $reps;
+            
+        endforeach;
+        
+        krsort($datas);
+        
+        $return = [];
+        
+        foreach( $datas as $key => $value ):
+            
+            if(count($value) === 1):
+               
+                    $return[] = $value[0]['data'];
+                
+            else:
+                
+               foreach($value as $k => $v):
+                
+                    $return[] = $v['data'];
+                
+                 
+                endforeach;
+                
+            endif;
+            
+        endforeach;
+        
+        return $return;
         
     }
     
@@ -81,7 +126,9 @@ class AdrunWebsiteModel extends Model
         
         if(count($editeur[0]->cimps) > 0):
             
-            return number_format($editeur[0]->cimps);
+            //return number_format($editeur[0]->cimps);
+            
+            return (int) $editeur[0]->cimps;
         
         endif;
         
@@ -107,7 +154,8 @@ class AdrunWebsiteModel extends Model
         
         if(count($editeur[0]->cclicks) > 0):
             
-            return number_format($editeur[0]->cclicks);
+            //return number_format($editeur[0]->cclicks);
+            return (int) $editeur[0]->cclicks;
         
         endif;
         
@@ -140,7 +188,7 @@ class AdrunWebsiteModel extends Model
               'target'                => 'Local',
               'contact_first_name'    => $data->contact->firstName, 
               'contact_last_name'     => $data->contact->lastName,
-              'company_name'                  => $data->name,  
+              'company_name'          => $data->name,  
             ]
             );
         
