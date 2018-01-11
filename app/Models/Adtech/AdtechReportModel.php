@@ -55,6 +55,7 @@ class AdtechReportModel extends Model
     public function getReportDetailByID($id = 0, $trigger = NULL)
     {
         
+        
          $params   = array ( "arg0" => 57847009 );
             
                 
@@ -124,7 +125,7 @@ class AdtechReportModel extends Model
                 //Save XML as a file
                 $dom->save($this->request_folder.'/'.$file_name);
                 
-                chmod($this->request_folder.'/'.$file_name, 0777);  //changed to add the zero
+                //chmod($this->request_folder.'/'.$file_name, 0777);  //changed to add the zero
                 
             endif;
             
@@ -223,7 +224,7 @@ class AdtechReportModel extends Model
                 //Save XML as a file
                 $dom->save($this->request_folder.'/'.$file_name);
                 
-                chmod($this->request_folder.'/'.$file_name, 0777);  //changed to add the zero
+                //chmod($this->request_folder.'/'.$file_name, 0777);  //changed to add the zero
     }
     
     
