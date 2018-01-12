@@ -21,7 +21,7 @@ use App\Models\Adtech\AdtecStatisticsModel;
 //use App\Models\Adrun\AdrunCustomerModel;
 use App\Models\Adrun\AdrunWebsiteModel;
 use App\Models\Adtech\AdtechWebsiteModel;
-
+use App\Models\SingleBilanModel;
 use Carbon\Carbon;
 use DateTime;
 
@@ -49,7 +49,8 @@ class HomeController extends Controller
     {
         $month = new Carbon('last month');
         
-        AdtechReportModel::getInstance()->getReportDetailByID(47677004);
+        AdtechReportModel::getInstance()->getReportDetailByID(219);
+      
         
         $campaigns = AdrunCampaignModel::getInstance()->getCampaignTermineYesterday();
         $editeurs  = AdrunWebsiteModel::getInstance()->getAllEditeursLastMonth();

@@ -1,7 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <soap:Envelope xmlns:soap="http://www.w3.org/2003/05/soap-envelope">
     <soap:Body>
-        <ns2:requestReportByEntitiesResponse xmlns:ns6="http://CampaignManagement.helios.adtech.de/" xmlns:ns5="http://helios.adtech.de/" xmlns:ns4="http://ReportManagement.helios.adtech.de/" xmlns:ns3="http://rawdata.webservice.adtech.de/" xmlns:ns2="http://ReportManagement_v3.lowLevel.helios.webservices.adtech.de/">
+        <ns2:requestReportByEntitiesResponse 
+            xmlns:ns6="http://CampaignManagement.helios.adtech.de/" 
+            xmlns:ns5="http://helios.adtech.de/" 
+            xmlns:ns4="http://ReportManagement.helios.adtech.de/" 
+            xmlns:ns3="http://rawdata.webservice.adtech.de/"
+            xmlns:ns2="http://ReportManagement_v3.lowLevel.helios.webservices.adtech.de/">
             <return>
                 <ns4:archiveDate>2017-12-26T13:23:09.381+01:00</ns4:archiveDate>
                 <ns4:archiveStatus>0</ns4:archiveStatus>

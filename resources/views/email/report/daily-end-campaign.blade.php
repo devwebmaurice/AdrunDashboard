@@ -281,7 +281,7 @@
                                                                                 {{ $data['name'] }}
                                                                             </h3>
                                                                             <div style="text-align:left;font-family:Helvetica,Arial,sans-serif;font-size:13px;margin-bottom:0;color:#5F5F5F;line-height:135%;">
-                                                                                <a href="http://test.adrun.re/dashboard/storage/report/campaign/{{ $data['day'] }}/{{ $data['name'] }}.xlsx">Download</a>
+                                                                                <a href="http://test.adrun.re/dashboard/adrun/campaign/{{ $data['day'] }}/{{ $data['name'] }}.xlsx">Download</a>
                                                                                 <p>Les Rapports ADTECH</p>
                                                                                 <ul>
                                                                                     <li> [Par Flight par Site web] </li>
