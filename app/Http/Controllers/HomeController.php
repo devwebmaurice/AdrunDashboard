@@ -49,10 +49,8 @@ class HomeController extends Controller
     {
         $month = new Carbon('last month');
         
-        //AdtechReportModel::getInstance()->getReportDetailByID(47677004);
+        AdtechReportModel::getInstance()->getReportDetailByID(219);
       
-        $test = SingleBilanModel::getInstance()->createBilan(2517);
-        
         
         $campaigns = AdrunCampaignModel::getInstance()->getCampaignTermineYesterday();
         $editeurs  = AdrunWebsiteModel::getInstance()->getAllEditeursLastMonth();
