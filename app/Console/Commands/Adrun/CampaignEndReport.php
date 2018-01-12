@@ -93,11 +93,11 @@ class CampaignEndReport extends Command
             
             echo PHP_EOL ."---$campaign->cname---" . PHP_EOL;
             
-            $test = SingleBilanModel::getInstance()->createBilan($campaign->id);
+            $fac = SingleBilanModel::getInstance()->createBilan($campaign->id);
             
             if(!is_null($test)):
                 
-                $details[] = $test;
+                $details[] = $fac;
             
             endif;
         endforeach;

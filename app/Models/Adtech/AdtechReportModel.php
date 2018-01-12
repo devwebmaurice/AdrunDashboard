@@ -36,7 +36,7 @@ class AdtechReportModel extends Model
         $this->report_category_campaign          = 100;
         $this->master_campaign_overview          = 86442;
         
-        $this->local_path  = ( $_SERVER['APP_ENV'] === 'local' ) ? storage_path().'/report/request' : '/var/www/html/adrun/services/dashboard/storage/report/request';
+        $this->local_path  = ( $_SERVER['APP_ENV'] === 'local' ) ? storage_path().'/test' : '/var/www/html/adrun/services/dashboard/storage/report/request';
         
         $this->request_folder = (is_dir( $this->local_path )) ? $this->local_path : mkdir( $this->local_path, 0777, true);
         
@@ -55,24 +55,52 @@ class AdtechReportModel extends Model
     public function getReportDetailByID($id = 0, $trigger = NULL)
     {
         
-         $params   = array ( "arg0" => 57847009 );
-            
-                
-                    
-        try {
-                $obj = $this->client->getReportById( $params );
-
-            }
         
-         catch (\SoapFault $e) {
+            $params   = array ( "arg0" => $id );
+            
+            $file_name = $id . '_test.xml';
+         
+            $xml = '<S:Envelope
+        xmlns:S="http://www.w3.org/2003/05/soap-envelope">
+        <S:Body>
+            <ns8:getReportById
+                xmlns:ns9="http://security.lowLevel.helios.webservices.adtech.de/"
+                xmlns:ns8="http://ReportManagement_v3.lowLevel.helios.webservices.adtech.de/"
+                xmlns:ns7="http://ReportManagement.helios.adtech.de/"
+                xmlns:ns6="http://rawdata.webservice.adtech.de/"
+                xmlns:ns5="http://helios.adtech.de/"
+                xmlns:ns4="http://UserManagement.helios.adtech.de/"
+                xmlns:ns3="http://BannerManagement.helios.adtech.de/"
+                xmlns:ns2="http://CampaignManagement.helios.adtech.de/">
+                <arg0>'.$id.'</arg0>
+                </ns8:getReportById>
+            </S:Body>
+        </S:Envelope>';
+            
+            
+            try {
+                   // $response = $this->client->__doRequest($xml,$this->url_v3 ,'getReportById',$this->adtech_soap_version);
+                    $response = $this->client->getReportById($params);
+                    
+                    
+            } catch (\SoapFault $e) {
                 
                 echo 'test';
                 
             }
             
             
-       print_r($obj);
-        die();
+            var_dump($response);
+            
+            $dom = new DOMDocument;
+                $dom->preserveWhiteSpace = FALSE;
+                $dom->loadXML($response);
+
+                //Save XML as a file
+                $dom->save($this->request_folder.'/'.$file_name);
+            
+            
+        die('toto');
         
     }
     
@@ -124,7 +152,7 @@ class AdtechReportModel extends Model
                 //Save XML as a file
                 $dom->save($this->request_folder.'/'.$file_name);
                 
-                chmod($this->request_folder.'/'.$file_name, 0777);  //changed to add the zero
+                //chmod($this->request_folder.'/'.$file_name, 0777);  //changed to add the zero
                 
             endif;
             
@@ -223,7 +251,7 @@ class AdtechReportModel extends Model
                 //Save XML as a file
                 $dom->save($this->request_folder.'/'.$file_name);
                 
-                chmod($this->request_folder.'/'.$file_name, 0777);  //changed to add the zero
+                //chmod($this->request_folder.'/'.$file_name, 0777);  //changed to add the zero
     }
     
     
