@@ -60,7 +60,6 @@ class AdrunCampaignModel extends Model
     
     public function getAllCampaignMasterFix()
     {
-        
         $campaigns = DB::table($this->tbl_campaign.' AS c')
             ->select('c.id_adtech AS id_adtech','c.id AS id')
             ->where([
@@ -71,7 +70,6 @@ class AdrunCampaignModel extends Model
             ->get();
         
         return $campaigns;
-        
         
     }
     
@@ -90,7 +88,6 @@ class AdrunCampaignModel extends Model
             ->get();
         
         return $campaigns;
-        
         
     }
     
@@ -352,6 +349,32 @@ class AdrunCampaignModel extends Model
             ->first();
         
         return $sum;
+    }
+    
+    public function addADRUNReportMasterUVID($c_id,$r_id)
+    {
+        DB::table( $this->tbl_campaign ) ->where( 'id_adtech', $c_id ) ->update(['masterReportUVId' => $r_id]);
+        
+        
+    }
+    
+    public function getADRUNReportMasterUVStatut($id)
+    {
+        
+        $res = DB::table( $this->tbl_campaign ) ->select( 'masterReportUVId' ) ->where([ ['id_adtech','=', $id], ])->first();
+        
+        if($res->masterReportUVId === 0): return false; else: return true; endif;
+        
+    }
+    
+    
+    public function getADRUNMasterUVID()
+    {
+        
+        $campaigns = DB::table( $this->tbl_campaign ) ->select( '*' ) ->where([ ['masterReportUVId','!=', 0 ], ])->get();
+        
+        return $campaigns;
+        
     }
     
 }
