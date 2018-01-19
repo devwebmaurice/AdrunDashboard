@@ -21,6 +21,12 @@ class Kernel extends ConsoleKernel
         '\App\Console\Commands\Adrun\CampaignEndReport',
         '\App\Console\Commands\Adrun\Dashboard',
         '\App\Console\Commands\Adrun\CampaignCLIControl',
+        '\App\Console\Commands\Adrun\ScanXmlMasterUV',
+        
+        '\App\Console\Commands\Adrun\Campaign\CampaignEndPhase1',
+        '\App\Console\Commands\Adrun\Campaign\CampaignEndPhase2',
+        '\App\Console\Commands\Adrun\Campaign\CampaignEndPhase3',
+        '\App\Console\Commands\Adrun\Campaign\CampaignEndPhase4',
         
     ];
 

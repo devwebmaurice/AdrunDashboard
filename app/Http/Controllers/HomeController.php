@@ -25,6 +25,9 @@ use App\Models\SingleBilanModel;
 use Carbon\Carbon;
 use DateTime;
 
+use App\Console\Commands\adrun\DownloadMasterUV;
+use App\Console\Commands\Adrun\CampaignEndReport;
+
 
 class HomeController extends Controller
 {
@@ -49,7 +52,9 @@ class HomeController extends Controller
     {
         $month = new Carbon('last month');
         
-        AdtechReportModel::getInstance()->getReportDetailByID(219);
+        CampaignEndReport::getInstance()->handle();
+        
+        AdtechReportModel::getInstance()->getReport();
       
         
         $campaigns = AdrunCampaignModel::getInstance()->getCampaignTermineYesterday();

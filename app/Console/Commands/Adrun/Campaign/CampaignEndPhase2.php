@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Console\Commands\Adrun;
+namespace App\Console\Commands\Adrun\Campaign;
 
 use Illuminate\Console\Command;
 use App\Models\Adrun\AdrunCampaignModel;
@@ -11,21 +11,21 @@ use App\Models\SingleBilanModel;
 use App\Models\Mail\ReportModel;
 use App\Models\Adrun\AdrunReportModel;
 
-class CampaignEndReport extends Command
+class CampaignEndPhase2 extends Command
 {
     /**
      * The name and signature of the console command.
      *
      * @var string
      */
-    protected $signature = 'adrun:campaignEndReport';
+    protected $signature = 'adrun:campaignEndPhase2';
 
     /**
      * The console command description.
      *
      * @var string
      */
-    protected $description = 'Generate end Report';
+    protected $description = 'Creation des fichiers xml + Acquisition report ADTECH';
     
     private static $_instance;
     /**
@@ -54,33 +54,8 @@ class CampaignEndReport extends Command
      */
     public function handle()
     {
-        $last  = AdrunCampaignModel::getInstance()->getLastDateReportDone();
-        $last  = Carbon::parse($last->adrun_day)->format('Y-m-d H:i:s');
-        $check = Carbon::now()->subDays(1)->endOfDay();
-        $check = Carbon::parse($check)->format('Y-m-d H:i:s');
-        
-        echo PHP_EOL ."---CREATE END OF CAMPAIGN REPORT---" . PHP_EOL;
+        echo PHP_EOL ."---START MISSION--" . PHP_EOL;
         flush();
-        /**
-         * Get impression/click
-         */
-        if( $last < $check ):
-           
-            $date1 = new DateTime($check);
-            $date2 = new DateTime($last);
-            $diff = $date1->diff($date2);
-            
-            $x = 1; 
-            while($x <= $diff->d):
-                $x++;
-                $date2->modify('+1 day');
-                $start =  $date2->format('Ymd');
-                
-                $objs = AdtechReportModel::getInstance()->getSummaryStatisticsDay($start);
-                
-            endwhile;
-            
-        endif;
         
         $campaigns = AdrunCampaignModel::getInstance()->getCampaignTermineYesterday(2);
         $details = [];
@@ -93,14 +68,14 @@ class CampaignEndReport extends Command
                 echo PHP_EOL ."---$campaign->cname---" . PHP_EOL;
                 
                 //Get flight from Master
-                $flights         = AdrunReportModel::getInstance()->getSlaveByMasterId($campaign->id_adtech);
+                $flights          = AdrunReportModel::getInstance()->getSlaveByMasterId($campaign->id_adtech);
                 
                 $i=0;
-                foreach($flights as $flight):
+                foreach( $flights as $flight ):
                     
                     if($i === 0):
                      
-                        $report_res = AdtechReportModel::getInstance()->generateReport($flight->id);
+                        $report_res = AdtechReportModel::getInstance()->generateReport($flight->id,null,$campaign->id_adtech);
                         
                     else:
                         
@@ -112,33 +87,14 @@ class CampaignEndReport extends Command
                     $i++;
                     
                 endforeach;
-            
-                $fac = SingleBilanModel::getInstance()->createBilan($campaign->id);
-
-//                
-
-                
-
-                
-
-    //            if(!is_null($fac)):
-    //                
-    //                $details[] = $fac;
-    //            
-    //            endif;
-                
                 
             endif;
             
         endforeach;
         
         
-        ReportModel::getInstance()->sendDailyEndOfCampaignReport($details);
-        
-        
         echo PHP_EOL ."---MISSION COMPLETED---" . PHP_EOL;
         flush();
         
-        die();
     }
 }

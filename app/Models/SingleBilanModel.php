@@ -45,17 +45,14 @@ class SingleBilanModel extends Model
         return self::$_instance;
     }
     
-    public function createBilan($campaign_id)
+    public function createBilan($campaign_id,$extra)
     {
         
-        $day = Carbon::now()->subDays(2)->format('d-m-Y');
-        
+        $day                  = Carbon::now()->subDays(2)->format('d-m-Y');
         $campaign             = AdrunCampaignModel::getInstance()->getADRUNCampaignByID($campaign_id);
         $this->campaign_id    = $campaign->cid_adtech;
         $this->detail         = $this->createFileDetail($campaign,$day);
-        
-        //rmdir( $this->report_main_path );
-        //rmdir( $this->report_campaign );
+        $this->extra         = $extra;
         
         if(!is_dir($this->report_main_path)):
 
@@ -77,8 +74,8 @@ class SingleBilanModel extends Model
         if (!file_exists($this->report_campaign.$day.'/'.$namexcx.".xlsx")):
             
             
-            Excel::create($namexcx, function($excel) use($campaign){
-
+            Excel::create($namexcx, function($excel) use($campaign,$extra){
+                
                 $date = $this->createDateDetail($campaign->start, $campaign->end);
 
                 // Set the title
@@ -91,7 +88,7 @@ class SingleBilanModel extends Model
 
                 $data = [ ];
 
-                $excel->sheet($this->TAB_1, function ($sheet) use ($data,$date) {
+                $excel->sheet($this->TAB_1, function ($sheet) use ($data,$date,$extra) {
 
                     $sheet->setStyle(array(
                         'font' => array(
@@ -229,11 +226,40 @@ class SingleBilanModel extends Model
                     $this->clk  = $FICC['total'][2];
                     $this->rate = $FICC['total'][3];
                     
-                    $sheet->cell('D9', function($cell) { $cell->setValue( $this->imp ); });
-                    $sheet->cell('D10', function($cell) { $cell->setValue($this->clk); });
-                    $sheet->cell('D11', function($cell) { $cell->setValue($this->rate); });
-                    $sheet->cell('D12', function($cell) { $cell->setValue('UNDEFINED'); });
-                    $sheet->cell('D13', function($cell) { $cell->setValue('UNDEFINED'); });
+//                    $sheet->cell('D9', function($cell) { $cell->setValue( $this->imp ); });
+
+//                    $sheet->cell('D13', function($cell) { $cell->setValue('UNDEFINED'); });
+                    //                    $sheet->cell('D10', function($cell) { $cell->setValue($this->clk); });
+//                    $sheet->cell('D11', function($cell) { $cell->setValue($this->rate); });
+//                    $sheet->cell('D12', function($cell) { $cell->setValue('UNDEFINED'); });
+                    $sheet->cell('D9', function($cell) { 
+                        
+                        $cell->setValue( $this->imp ); 
+                        
+                        
+                    });
+                    $sheet->cell('D10', function($cell) { $cell->setValue( $this->clk ); });
+                    $sheet->cell('D11', function($cell) { $cell->setValue( $this->rate ); });
+                    $sheet->cell('D12', function($cell) { 
+                       
+                        $vu = preg_replace('/\s+/u', '', $this->extra['vu']);
+                        
+                        $cell->setValue( number_format($vu) ); 
+                        
+                    });
+                    $sheet->cell('D13', function($cell) { 
+                        
+                        $vu        = (int) preg_replace('/\s+/u', '', $this->extra['vu']);
+                        $this->imp = str_replace(',','',$this->imp);
+                        var_dump($this->imp,$vu);
+                        
+                        $rep = $this->imp - (int) $vu;
+                        
+                        $cell->setValue( number_format( $rep ) ); 
+                        
+                        
+                        
+                    });
                     
                     $sheet->cell('A15', function($cell) {
                         // manipulate the cell
@@ -296,7 +322,6 @@ class SingleBilanModel extends Model
                         $cells->setFont(array(
                             'bold'       =>  true
                         ));
-                        
 
                     });
                     
@@ -337,6 +362,9 @@ class SingleBilanModel extends Model
             return $this->detail;
         
          endif;
+         
+         
+            return null;
     }
     
     private function createFileDetail($data,$day)

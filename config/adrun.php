@@ -46,6 +46,13 @@ return [
         'ADTECH_SOAP_VERSION'          => array ('soap_version' => 'SOAP_1_2','trace' => 1)
     ],
     
+    'report' => [
+        'excel' => '&view=imps&format=exel&mainLogo=&subLogo=&langText=fr&langDate=fr_FR&langNum=fr_FR&',
+        'csv'   => '&view=imps&format=csv&mainLogo=&subLogo=&langText=fr&langDate=fr_FR&langNum=fr_FR&',
+        'xml'   => '&view=imps&format=xml&mainLogo=&subLogo=&langText=fr&langDate=fr_FR&langNum=fr_FR&'
+        
+    ],
+    
     'emails' => [
 //        'Caroline Legagneur'        => 'c.legagneur@adrun.re',
 //        'Virginie Cuinet'           => 'v.cuinet@adrun.re',

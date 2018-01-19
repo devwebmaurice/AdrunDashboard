@@ -29,13 +29,9 @@
 
                                 @foreach ($campaigns as $campaign)
                                 
-                                    @if ( $campaign->start > Carbon\Carbon::now() )
+                                    @if ( $campaign->categorie === 1 )
 
-                                        <tr data-entry-id="{{ $campaign->id }}"  class="adrun-en-attente">
-
-                                    @elseif ( $campaign->end > Carbon\Carbon::now() )
-
-                                        <tr data-entry-id="{{ $campaign->id }}"  class="adrun-en-cour">
+                                        <tr data-entry-id="{{ $campaign->id }}"  class="btn-danger">
 
                                     @else
 
@@ -48,7 +44,7 @@
                                         <td>{{ mb_strtoupper(trans($campaign->cname)) }}</td>
                                         <td>{{ mb_strtoupper(html_entity_decode(trans($campaign->aname))) }}</td>
                                         
-                                        @if ( $campaign->start > Carbon\Carbon::now() )
+                                    @if ( $campaign->start > Carbon\Carbon::now() )
 
                                          <td>EN ATTENTE</td>
 
@@ -73,7 +69,7 @@
                                                 'method' => 'DELETE',
                                                 'onsubmit' => "return confirm('".trans("global.app_are_you_sure")."');",
                                                 'route' => ['admin.editeur.destroy', $campaign->id])) !!}
-                                            {!! Form::submit(trans('Report Created'), array('class' => 'btn btn-xs btn-success')) !!}
+                                            {!! Form::submit(trans('Download'), array('class' => 'btn btn-xs btn-warning')) !!}
                                             {!! Form::close() !!}
                                         </td>
 

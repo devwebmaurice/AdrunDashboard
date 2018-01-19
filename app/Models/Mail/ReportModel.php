@@ -40,8 +40,7 @@ class ReportModel extends Model
                     $date = Carbon::now()->subDays(2)->endOfDay(); 
 
                     $message->to($this->email, $this->nom  )->subject('BILAN DE CAMPAGNE DU [ '.$date->format('d/m/Y').' ]');
-                    $message->from('dashboard.adrun@gmail.com','ADRUN INTELLIGENCE DASHBOARD ');
-
+                    $message->from('dashboard.adrun@gmail.com','ADRUN INTELLIGENCE DASHBOARD');
 
                 });
             
@@ -64,7 +63,7 @@ class ReportModel extends Model
             $date = Carbon::now(); 
 
             $message->to($this->email, $this->nom  )->subject('DASHBOARD SYNC [ '.$date->format('Y-m-d H:i:s').' ]');
-            $message->from('dashboard.adrun@gmail.com','DASHBOARD ADRUN');
+            $message->from('dashboard.adrun@gmail.com','ADRUN INTELLIGENCE DASHBOARD');
 
 
         });
