@@ -226,45 +226,40 @@ class SingleBilanModel extends Model
                     $this->clk  = $FICC['total'][2];
                     $this->rate = $FICC['total'][3];
                     
-                    //$repe = $extra['imps'] - $extra['vu'];
-                    
-                    
-                    
-                    
 //                    $sheet->cell('D9', function($cell) { $cell->setValue( $this->imp ); });
-//                    $sheet->cell('D10', function($cell) { $cell->setValue($this->clk); });
+
+//                    $sheet->cell('D13', function($cell) { $cell->setValue('UNDEFINED'); });
+                    //                    $sheet->cell('D10', function($cell) { $cell->setValue($this->clk); });
 //                    $sheet->cell('D11', function($cell) { $cell->setValue($this->rate); });
 //                    $sheet->cell('D12', function($cell) { $cell->setValue('UNDEFINED'); });
-//                    $sheet->cell('D13', function($cell) { $cell->setValue('UNDEFINED'); });
-                    
                     $sheet->cell('D9', function($cell) { 
                         
-                        $imps = preg_replace('/\s+/u', '', $this->extra['imps']);
-                         
-                        $cell->setValue( number_format($imps) ); 
+                        $cell->setValue( $this->imp ); 
                         
                         
                     });
-                    $sheet->cell('D10', function($cell) { $cell->setValue( $this->extra['clic'] ); });
+                    $sheet->cell('D10', function($cell) { $cell->setValue( $this->clk ); });
                     $sheet->cell('D11', function($cell) { $cell->setValue( $this->rate ); });
                     $sheet->cell('D12', function($cell) { 
                        
                         $vu = preg_replace('/\s+/u', '', $this->extra['vu']);
                         
-                        $cell->setValue( $vu ); 
-                        
+                        $cell->setValue( number_format($vu) ); 
                         
                     });
                     $sheet->cell('D13', function($cell) { 
                         
+                        $vu        = (int) preg_replace('/\s+/u', '', $this->extra['vu']);
+                        $this->imp = str_replace(',','',$this->imp);
+                        var_dump($this->imp,$vu);
                         
+                        $rep = $this->imp - (int) $vu;
                         
-                        $cell->setValue( 2131 ); 
+                        $cell->setValue( number_format( $rep ) ); 
                         
                         
                         
                     });
-                    
                     
                     $sheet->cell('A15', function($cell) {
                         // manipulate the cell
@@ -327,7 +322,6 @@ class SingleBilanModel extends Model
                         $cells->setFont(array(
                             'bold'       =>  true
                         ));
-                        
 
                     });
                     

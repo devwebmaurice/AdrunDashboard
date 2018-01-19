@@ -70,7 +70,7 @@ class CampaignEndPhase4 extends Command
         foreach ( $campaigns as $campaign ):
             
             $xml=simplexml_load_file($campaign->resultURL . $this->format);
-            
+        
             $vu   = preg_replace('/\s+/','', $xml->table->row->cell[10][0]);
             $clic = preg_replace('/\s+/','',$xml->table->row->cell[8][0]);
             $imps = preg_replace('/\s+/','',$xml->table->row->cell[4][0]);
@@ -88,9 +88,11 @@ class CampaignEndPhase4 extends Command
                 
         endforeach;
         
-        
-            var_dump($details);
-                die();
+        if(!empty($details)):
+            
+            ReportModel::getInstance()->sendDailyEndOfCampaignReport($details);
+            
+        endif;
         
         echo PHP_EOL ."---MISSION COMPLETED---" . PHP_EOL;
         flush();
