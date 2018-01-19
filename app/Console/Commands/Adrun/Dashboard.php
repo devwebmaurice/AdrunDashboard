@@ -50,11 +50,11 @@ class Dashboard extends Command
     public function handle()
     {
         
-        Advertiser::getInstance()->handle();
-        Campaign::getInstance()->handle();
-        
         $time        = (int) Carbon::now()->format('i');
         $report_time = date("H:i"); 
+        
+        Advertiser::getInstance()->handle();
+        Campaign::getInstance()->handle();
         
         if($time === 10):
             
@@ -65,11 +65,11 @@ class Dashboard extends Command
             
         endif;
         
-        if($time === '02:00'):
-            
-            CampaignEndReport::getInstance()->handle();
-            
-        endif;
+//        if($report_time === '02:00'):
+//            
+//            CampaignEndReport::getInstance()->handle();
+//            
+//        endif;
         
         
         

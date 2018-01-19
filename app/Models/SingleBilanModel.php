@@ -244,18 +244,17 @@ class SingleBilanModel extends Model
                        
                         $vu = preg_replace('/\s+/u', '', $this->extra['vu']);
                         
-                        $cell->setValue( number_format($vu) ); 
+                        $cell->setValue( number_format($vu, 0 ," "," ") ); 
                         
                     });
                     $sheet->cell('D13', function($cell) { 
                         
                         $vu        = (int) preg_replace('/\s+/u', '', $this->extra['vu']);
-                        $this->imp = str_replace(',','',$this->imp);
-                        var_dump($this->imp,$vu);
+                        $this->imp = str_replace(' ','',$this->imp);
                         
-                        $rep = $this->imp - (int) $vu;
+                        $rep = $this->imp / (int) $vu;
                         
-                        $cell->setValue( number_format( $rep ) ); 
+                        $cell->setValue( number_format( $rep , 2 ,"."," ") ); 
                         
                         
                         
@@ -426,7 +425,71 @@ class SingleBilanModel extends Model
 
                 endforeach;
             endforeach;
-        endforeach; 
+        endforeach;
+        
+        if (array_key_exists("ZINFOS974_MOBILE",$website)):
+            
+            $child_imps = $website['ZINFOS974_MOBILE'][0]['IMPRESSIONS'];
+            $child_clks = $website['ZINFOS974_MOBILE'][0]['CLICS'];
+
+            $website['ZINFOS974'][0] = [
+
+                'IMPRESSIONS' => $website['ZINFOS974'][0]['IMPRESSIONS'] + $child_imps,
+                'CLICS'       => $website['ZINFOS974'][0]['CLICS'] + $child_clks
+
+            ];
+
+            unset($website['ZINFOS974_MOBILE']);
+            
+        endif;
+        
+        if (array_key_exists("7MAGAZINE_MOBILE",$website)):
+            
+            $child_imps = $website['7MAGAZINE_MOBILE'][0]['IMPRESSIONS'];
+            $child_clks = $website['7MAGAZINE_MOBILE'][0]['CLICS'];
+
+            $website['7MAGAZINE'][0] = [
+
+                'IMPRESSIONS' => $website['7MAGAZINE'][0]['IMPRESSIONS'] + $child_imps,
+                'CLICS'       => $website['7MAGAZINE'][0]['CLICS'] + $child_clks
+
+            ];
+
+            unset($website['7MAGAZINE_MOBILE']);
+            
+        endif;
+        
+        if (array_key_exists("FAITSDIVERS_MOBILE",$website)):
+            
+            $child_imps = $website['FAITSDIVERS_MOBILE'][0]['IMPRESSIONS'];
+            $child_clks = $website['FAITSDIVERS_MOBILE'][0]['CLICS'];
+
+            $website['FAITSDIVERS'][0] = [
+
+                'IMPRESSIONS' => $website['FAITSDIVERS'][0]['IMPRESSIONS'] + $child_imps,
+                'CLICS'       => $website['FAITSDIVERS'][0]['CLICS'] + $child_clks
+
+            ];
+
+            unset($website['FAITSDIVERS_MOBILE']);
+            
+        endif;
+        
+        if (array_key_exists("LAPUB_MOBILE",$website)):
+            
+            $child_imps = $website['LAPUB_MOBILE'][0]['IMPRESSIONS'];
+            $child_clks = $website['LAPUB_MOBILE'][0]['CLICS'];
+
+            $website['LAPUB'][0] = [
+
+                'IMPRESSIONS' => $website['LAPUB'][0]['IMPRESSIONS'] + $child_imps,
+                'CLICS'       => $website['LAPUB'][0]['CLICS'] + $child_clks
+
+            ];
+
+            unset($website['LAPUB_MOBILE']);
+            
+        endif;
         
         foreach ($website as $key => $values ):
             
@@ -446,7 +509,7 @@ class SingleBilanModel extends Model
             $data[] =   [
                         'WEBSITE'        => mb_strtoupper($key), 
                         'IMPRESSIONS'   =>  $t_imps, 
-                        'CLICS'         =>  number_format($t_click), 
+                        'CLICS'         =>  number_format($t_click, 0 ," "," "), 
                         'TAUX DE CLICS' =>  number_format($t_percentage,2).' %'
                     ];
             
@@ -454,14 +517,14 @@ class SingleBilanModel extends Model
         endforeach; 
         
         $datas = $this->multid_sort($data, 'IMPRESSIONS');
-        
+     
         $quality = [];
         
         foreach ($datas as $data):
             
             $quality[]= [
                             'WEBSITE'       => $data['WEBSITE'],
-                            'IMPRESSIONS'   => number_format($data['IMPRESSIONS']),
+                            'IMPRESSIONS'   => number_format($data['IMPRESSIONS'], 0 ," "," "),
                             'CLICS'         => $data['CLICS'],
                             'TAUX DE CLICS' => $data['TAUX DE CLICS'],
                         ];
@@ -472,7 +535,7 @@ class SingleBilanModel extends Model
         $compile['number'] = count($quality) + $row;
         $compile['next']   = $row + 1;
         $compile['data']   = $quality;
-        $compile['total']  = array('', number_format($i_total), number_format($c_total), number_format($tx_percentage, 2).' %' ) ;
+        $compile['total']  = array('', number_format($i_total, 0 ," "," "), number_format($c_total, 0 ," "," "), number_format($tx_percentage, 2).' %' ) ;
         
         return $compile;
         
@@ -512,8 +575,8 @@ class SingleBilanModel extends Model
               
                     $data[] =   [
                         'FLIGHT'        => $key, 
-                        'IMPRESSIONS'   =>  number_format($impressions), 
-                        'CLICS'         =>  number_format($clics), 
+                        'IMPRESSIONS'   =>  number_format($impressions , 0 ," "," "), 
+                        'CLICS'         =>  number_format($clics, 0 ," "," "), 
                         'TAUX DE CLICS' => isset($percentage) ? number_format($percentage, 2).' %' : number_format('0', 2).' %'
                     ];
                     
@@ -531,7 +594,7 @@ class SingleBilanModel extends Model
            $compile['i_total']       = $i_total;
            $compile['c_total']       = $c_total;
            $compile['tx_percentage'] = $tx_percentage;
-           $compile['total']         = array('', number_format($i_total), number_format($c_total), number_format($tx_percentage, 2).' %' );
+           $compile['total']         = array('', number_format($i_total, 0 ," "," "), number_format($c_total, 0 ," "," "), number_format($tx_percentage, 2).' %' );
            
         return $compile;
         
