@@ -105,14 +105,12 @@ class AdtechReportModel extends Model
     }
     
     
-    public function generateReport($id = 0, $trigger = NULL)
+    public function generateReport($id = 0, $trigger = NULL,$master)
     {
         
         $campaign  = AdrunCampaignModel::getInstance()->getADRUNCampaignByID($id);
-        $this->masterCampaignOverview( $campaign );
-        
-        $file_name = $campaign->cid_adtech.'_uu.xml';
-        $file_url  = 'http://localhost/adrun-dashboard-v1-8/storage/report/request/'.$file_name;
+        $master    = $this->masterCampaignOverview( $campaign,$master );
+        $file_name = $master.'_uu.xml';
         
             if(!file_exists($this->request_folder.'/'.$file_name)):
                 
@@ -143,8 +141,6 @@ class AdtechReportModel extends Model
             
                 $response = $this->client->__doRequest($xml,$this->url_v3 ,'requestReportByEntities',$this->adtech_soap_version);
                 
-                var_dump($response);
-                
                 $dom = new DOMDocument;
                 $dom->preserveWhiteSpace = FALSE;
                 $dom->loadXML($response);
@@ -152,106 +148,60 @@ class AdtechReportModel extends Model
                 //Save XML as a file
                 $dom->save($this->request_folder.'/'.$file_name);
                 
-                //chmod($this->request_folder.'/'.$file_name, 0777);  //changed to add the zero
+                chmod($this->request_folder.'/'.$file_name, 0777);  //changed to add the zero
                 
             endif;
             
+            return [ 'uu' => $master, 'fps' => $file_name ];
+            
     }
     
-    public function createFlightByWebsiteReport( $slaves, $master, $start, $end )
-    {
-        
-        $file_name = $master.'_uu.xml';
-        $file_url  = 'http://localhost/adrun-dashboard-v1-8/storage/report/request/'.$file_name;
-        
-            if(!file_exists($this->request_folder.'/cli/'.$file_name)):
-                
-                $xml = '<soap:Envelope
-                xmlns:soap="http://www.w3.org/2003/05/soap-envelope">
-                <soap:Body>
-                    <ns2:requestReportByEntities
-                        xmlns:ns2="http://ReportManagement_v3.lowLevel.helios.webservices.adtech.de/"
-                        xmlns:ns3="http://rawdata.webservice.adtech.de/"
-                        xmlns:ns4="http://ReportManagement.helios.adtech.de/"
-                        xmlns:ns5="http://CampaignManagement.helios.adtech.de/"
-                        xmlns:ns6="http://helios.adtech.de/"
-                        xmlns:ns7="http://UserManagement.helios.adtech.de/">
-                        <arg0>' . $this->report_uu_id . '</arg0>
-                        <arg1>' . $start . '</arg1>
-                        <arg2>' . $end . '</arg2>
-                        <arg3>' . $this->report_entity_type_mastercampaign . '</arg3>
-                        <arg4>' . $this->report_category_campaign  .'</arg4>
-                        <arg5
-                            xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-                            xmlns:xs="http://www.w3.org/2001/XMLSchema"
-                            xsi:type="xs:long">
-                            '. 18678333 .'
-                            </arg5>
-                        </ns2:requestReportByEntities>
-                    </soap:Body>
-                </soap:Envelope>';
-            
-                $response = $this->client->__doRequest($xml,$this->url_v3 ,'requestReportByEntities',$this->adtech_soap_version);
-                
-                $dom = new DOMDocument;
-                $dom->preserveWhiteSpace = FALSE;
-                $dom->loadXML($response);
-
-                //Save XML as a file
-                $dom->save($this->request_folder.'/cli/'.$file_name);
-                
-                chmod($this->request_folder.'/cli/'.$file_name, 0777);  //changed to add the zero
-                
-            else:
-                
-                unlink($this->request_folder.'/cli/'.$file_name);
-                $this->createFlightByWebsiteReport( $slaves, $master, $start, $end );
-                
-            endif;
-            
-
-        
-    }
     
-    private function masterCampaignOverview( $campaign )
+    private function masterCampaignOverview( $campaign,$master )
     {
-        $file_name = $campaign->cid_adtech.'_master_overview.xml';
+        $file_name = $master.'_master_overview.xml';
         
-        $xml = '<soap:Envelope
-                xmlns:soap="http://www.w3.org/2003/05/soap-envelope">
-                <soap:Body>
-                    <ns2:requestReportByEntities
-                        xmlns:ns2="http://ReportManagement_v3.lowLevel.helios.webservices.adtech.de/"
-                        xmlns:ns3="http://rawdata.webservice.adtech.de/"
-                        xmlns:ns4="http://ReportManagement.helios.adtech.de/"
-                        xmlns:ns5="http://CampaignManagement.helios.adtech.de/"
-                        xmlns:ns6="http://helios.adtech.de/"
-                        xmlns:ns7="http://UserManagement.helios.adtech.de/">
-                        <arg0>' . $this->master_campaign_overview . '</arg0>
-                        <arg1>' . $campaign->absoluteStartDate . '</arg1>
-                        <arg2>' . $campaign->absoluteEndDate . '</arg2>
-                        <arg3>' . $this->report_entity_type_mastercampaign . '</arg3>
-                        <arg4>' . $this->report_category_campaign  .'</arg4>
-                        <arg5
-                            xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-                            xmlns:xs="http://www.w3.org/2001/XMLSchema"
-                            xsi:type="xs:long">
-                            '.$campaign->cid_adtech.'
-                            </arg5>
-                        </ns2:requestReportByEntities>
-                    </soap:Body>
-                </soap:Envelope>';
+        if(!file_exists($this->request_folder.'/'.$file_name)):
         
-        $response = $this->client->__doRequest($xml,$this->url_v3 ,'requestReportByEntities',$this->adtech_soap_version);
-                
-                $dom = new DOMDocument;
-                $dom->preserveWhiteSpace = FALSE;
-                $dom->loadXML($response);
+            $xml = '<soap:Envelope
+                    xmlns:soap="http://www.w3.org/2003/05/soap-envelope">
+                    <soap:Body>
+                        <ns2:requestReportByEntities
+                            xmlns:ns2="http://ReportManagement_v3.lowLevel.helios.webservices.adtech.de/"
+                            xmlns:ns3="http://rawdata.webservice.adtech.de/"
+                            xmlns:ns4="http://ReportManagement.helios.adtech.de/"
+                            xmlns:ns5="http://CampaignManagement.helios.adtech.de/"
+                            xmlns:ns6="http://helios.adtech.de/"
+                            xmlns:ns7="http://UserManagement.helios.adtech.de/">
+                            <arg0>' . $this->master_campaign_overview . '</arg0>
+                            <arg1>' . $campaign->absoluteStartDate . '</arg1>
+                            <arg2>' . $campaign->absoluteEndDate . '</arg2>
+                            <arg3>' . $this->report_entity_type_mastercampaign . '</arg3>
+                            <arg4>' . $this->report_category_campaign  .'</arg4>
+                            <arg5
+                                xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                                xmlns:xs="http://www.w3.org/2001/XMLSchema"
+                                xsi:type="xs:long">
+                                '.$campaign->cid_adtech.'
+                                </arg5>
+                            </ns2:requestReportByEntities>
+                        </soap:Body>
+                    </soap:Envelope>';
 
-                //Save XML as a file
-                $dom->save($this->request_folder.'/'.$file_name);
-                
-                //chmod($this->request_folder.'/'.$file_name, 0777);  //changed to add the zero
+            $response = $this->client->__doRequest($xml,$this->url_v3 ,'requestReportByEntities',$this->adtech_soap_version);
+
+            $dom = new DOMDocument;
+            $dom->preserveWhiteSpace = FALSE;
+            $dom->loadXML($response);
+
+            //Save XML as a file
+            $dom->save($this->request_folder.'/'.$file_name);
+
+            chmod($this->request_folder.'/'.$file_name, 0777);  //changed to add the zero
+        
+        endif;
+        
+        return $file_name;
     }
     
     
@@ -512,6 +462,15 @@ class AdtechReportModel extends Model
         var_dump($reporting);
         
         die('toto');
+    }
+    
+    public function getReportDetailsByID($id)
+    {
+        $params   = array ( "arg0" => $id );
+        
+        $objs = $this->client->getReportQueueEntryById($params);
+        
+        return $objs->return;
     }
     
 

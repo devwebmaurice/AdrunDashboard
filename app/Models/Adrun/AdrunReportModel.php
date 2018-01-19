@@ -89,15 +89,15 @@ class AdrunReportModel extends Model
     public function getSlaveByMasterId($id)
     {
         
-        $idx = DB::table($this->tbl_campaign.' AS c')
+        $ids = DB::table($this->tbl_campaign.' AS c')
             ->select('c.id')
             ->where([
                 ['masterCampaignId','=', $id],
                 
             ])
-            ->first();
+            ->get();
         
-        $return = $idx->id;
+        $return = $ids;
         
         
         return $return;
@@ -135,6 +135,25 @@ class AdrunReportModel extends Model
             ->get();
     
         return $websites;
+    }
+    
+    public function addReportId($report, $campaign)
+    {
+        
+        DB::table($this->tbl_campaign)
+            ->where('id_adtech', $campaign)
+            ->update(['masterReportUVId' => $report]);
+        
+    }
+    
+    
+    public function addResultURL($url, $campaign)
+    {
+        
+        DB::table($this->tbl_campaign)
+            ->where('id_adtech', $campaign)
+            ->update(['resultURL' => $url]);
+        
     }
     
     
