@@ -56,7 +56,7 @@ class Dashboard extends Command
         Advertiser::getInstance()->handle();
         Campaign::getInstance()->handle();
         
-        if($time === 10):
+        if($time === '12:00' || $time === '00:00'):
             
             $datas['name']     = 'Jacques D. L. Rima';
             $datas['surname']  = 'devwebmaurice@adrun.re';
