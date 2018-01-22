@@ -491,6 +491,22 @@ class SingleBilanModel extends Model
             
         endif;
         
+        if (array_key_exists("FAITSDIVERS",$website)):
+            
+            $child_imps = $website['FAITSDIVERS'][0]['IMPRESSIONS'];
+            $child_clks = $website['FAITSDIVERS'][0]['CLICS'];
+
+            $website['ZINFOS974'][0] = [
+
+                'IMPRESSIONS' => $website['ZINFOS974'][0]['IMPRESSIONS'] + $child_imps,
+                'CLICS'       => $website['ZINFOS974'][0]['CLICS'] + $child_clks
+
+            ];
+
+            unset($website['FAITSDIVERS']);
+            
+        endif;
+        
         foreach ($website as $key => $values ):
             
             $loop    = count($values);
