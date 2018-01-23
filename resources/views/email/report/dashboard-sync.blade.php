@@ -237,8 +237,8 @@
                                                                             <div mc:edit="body" style="text-align:left;font-family:Helvetica,Arial,sans-serif;font-size:15px;margin-bottom:0;color:#5F5F5F;line-height:135%;">
                                                                                 <hr/>
                                                                                 <p>Je vous souhaite une excellente journée.</p>
-                                                                                <p><strong>The Dashboard</strong></p>
-                                                                                <small>Ceci est un e-mail automatisé du Dashboard</small>  
+                                                                                <p><strong>ADRUN INTELLIGENCE DASHBOARD</strong></p>
+                                                                                <small>Ceci est un e-mail automatisé: ADRUN INTELLIGENCE DASHBOARD</small>  
                                                                             </div>
                                                                         </td>
                                                                     </tr>
@@ -270,7 +270,7 @@
                                                         <tr>
                                                             <td valign="top" bgcolor="#E1E1E1">
                                                                 <div style="font-family:Helvetica,Arial,sans-serif;font-size:13px;color:#828282;text-align:center;line-height:120%;">
-                                                                        <div>Copyright &#169; 2018 <a href="" target="_blank" style="text-decoration:none;color:#828282;"><span style="color:#828282;">DASHBOARD ADRUN</span></a>. All&nbsp;rights&nbsp;reserved.</div>
+                                                                        <div>Copyright &#169; 2018 <a href="" target="_blank" style="text-decoration:none;color:#828282;"><span style="color:#828282;">ADRUN INTELLIGENCE DASHBOARD	</span></a>. All&nbsp;rights&nbsp;reserved.</div>
                                                                 </div>
                                                             </td>
                                                         </tr>

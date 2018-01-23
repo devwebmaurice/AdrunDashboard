@@ -52,9 +52,10 @@ class HomeController extends Controller
     {
         $month = new Carbon('last month');
         
-        CampaignEndReport::getInstance()->handle();
+        //AdtechReportModel::getInstance()->generateReport($id = 0, $trigger = NULL,$master);
         
-        AdtechReportModel::getInstance()->getReport();
+        
+        //SingleBilanModel::getInstance()->createBilan($campaign_id,$extra);
       
         
         $campaigns = AdrunCampaignModel::getInstance()->getCampaignTermineYesterday();

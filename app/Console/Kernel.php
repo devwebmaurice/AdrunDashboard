@@ -41,8 +41,17 @@ class Kernel extends ConsoleKernel
         $schedule->command('adrun:dashboardSync')
                   ->everyMinute();
          
-        $schedule->command('adrun:campaignEndReport')
-                  ->dailyAt('0:55');
+        $schedule->command('adrun:campaignEndPhase1')
+                  ->dailyAt('0:05');
+        
+        $schedule->command('adrun:campaignEndPhase2')
+                  ->dailyAt('0:15');
+        
+        $schedule->command('adrun:campaignEndPhase3')
+                  ->dailyAt('0:35');
+        
+        $schedule->command('adrun:campaignEndPhase4')
+                  ->dailyAt('1:35');
          
     }
 
