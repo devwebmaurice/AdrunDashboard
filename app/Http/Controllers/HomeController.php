@@ -25,8 +25,7 @@ use App\Models\SingleBilanModel;
 use Carbon\Carbon;
 use DateTime;
 
-use App\Console\Commands\adrun\DownloadMasterUV;
-use App\Console\Commands\Adrun\CampaignEndReport;
+use App\Console\Commands\Adrun\Campaign\CampaignEndPhase2;
 
 
 class HomeController extends Controller
@@ -55,7 +54,7 @@ class HomeController extends Controller
         //AdtechReportModel::getInstance()->generateReport($id = 0, $trigger = NULL,$master);
         
         
-        //SingleBilanModel::getInstance()->createBilan($campaign_id,$extra);
+        //CampaignEndPhase2::getInstance()->handle();
       
         
         $campaigns = AdrunCampaignModel::getInstance()->getCampaignTermineYesterday();

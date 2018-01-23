@@ -105,11 +105,11 @@ class AdtechReportModel extends Model
     }
     
     
-    public function generateReport($id = 0, $trigger = NULL,$master)
+    public function generateReport($flights,$master)
     {
         
-        $campaign  = AdrunCampaignModel::getInstance()->getADRUNCampaignByID($id);
-        $master    = $this->masterCampaignOverview( $campaign,$master );
+        $campaign  = AdrunCampaignModel::getInstance()->getADRUNCampaignByID($flights{0}->id);
+        $this->masterCampaignOverview( $campaign,$master );
         $file_name = $master.'_uu.xml';
         
             if(!file_exists($this->request_folder.'/'.$file_name)):
@@ -128,14 +128,24 @@ class AdtechReportModel extends Model
                         <arg1>' . $campaign->absoluteStartDate . '</arg1>
                         <arg2>' . $campaign->absoluteEndDate . '</arg2>
                         <arg3>' . $this->report_entity_type_mastercampaign . '</arg3>
-                        <arg4>' . $this->report_category_campaign  .'</arg4>
+                        <arg4>' . $this->report_category_campaign  .'</arg4>'
+                    . '';
+                
+                foreach ($flights as $flight):
+                    
+                    $xml .= '
                         <arg5
                             xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
                             xmlns:xs="http://www.w3.org/2001/XMLSchema"
                             xsi:type="xs:long">
-                            '.$campaign->cid_adtech.'
+                            '.$flight->id_adtech.'
                             </arg5>
-                        </ns2:requestReportByEntities>
+                            ';
+                    
+                endforeach;    
+                
+                
+                $xml .= '</ns2:requestReportByEntities>
                     </soap:Body>
                 </soap:Envelope>';
             

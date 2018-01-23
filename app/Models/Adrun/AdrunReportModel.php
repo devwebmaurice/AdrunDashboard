@@ -90,7 +90,7 @@ class AdrunReportModel extends Model
     {
         
         $ids = DB::table($this->tbl_campaign.' AS c')
-            ->select('c.id')
+            ->select('c.id','c.id_adtech')
             ->where([
                 ['masterCampaignId','=', $id],
                 
