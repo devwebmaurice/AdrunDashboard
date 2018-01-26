@@ -23,7 +23,7 @@ class SingleBilanModel extends Model
         $this->tbl_advertiser    = \Config::get('adrun.table.advertiser');
         $this->tbl_banner        = \Config::get('adrun.table.banner');
         $this->tbl_report_sum    = \Config::get('adrun.table.TBL_REPORT_SUMMARY');
-        $this->TAB_1             = "TITRE";
+        $this->TAB_1             = "MESURE ET STATISTIQUES";
         $this->TAB_2             = "PAR SITE WEB";
         $this->TAB_3             = "PAR FLIGHT PAR SITE WEB";
         $this->TAB_1_TITLE       = "BILAN DE CAMPAGNE";
@@ -122,7 +122,6 @@ class SingleBilanModel extends Model
 
                         $cells->setBackground('#0085c1');
                         $cells->setFontColor('#FFFFFF');
-                        
                         $cells->setAlignment('left');
 
                     });
@@ -167,8 +166,6 @@ class SingleBilanModel extends Model
                         )
                     ));
                     
-                    //$sheet->setPageMargin( array( 0.25, 0.30, 0.25, 0.30 ) );
-
                     $sheet->cell('B3', function($cell) {
                         
                         // Set font
@@ -178,8 +175,6 @@ class SingleBilanModel extends Model
 
                     });
                     
-                    
-
                     $sheet->cell('A1', function($cell) {
                         // manipulate the cell
                         $cell->setValue($this->TAB_1_TITLE);
@@ -201,7 +196,6 @@ class SingleBilanModel extends Model
                     $sheet->row(5, array( 'Début :', $date['start']));
                     $sheet->row(6, array( 'Fin :', $date['end'] ));
                     
-                    
                     $sheet->cell('A8', function($cell) {
                         // manipulate the cell
                         $cell->setValue($this->TAB_1_SUB_1_TITLE);
@@ -220,22 +214,14 @@ class SingleBilanModel extends Model
                     $sheet->cell('A12', function($cell) { $cell->setValue('Visiteurs Uniques'); });
                     $sheet->cell('A13', function($cell) { $cell->setValue('Répétition'); });
                     
-                    $FICC = $this->getFlImpCliTDC();
-                    
+                    $FICC       = $this->getFlImpCliTDC();
                     $this->imp  = $FICC['total'][1];
                     $this->clk  = $FICC['total'][2];
                     $this->rate = $FICC['total'][3];
                     
-//                    $sheet->cell('D9', function($cell) { $cell->setValue( $this->imp ); });
-
-//                    $sheet->cell('D13', function($cell) { $cell->setValue('UNDEFINED'); });
-                    //                    $sheet->cell('D10', function($cell) { $cell->setValue($this->clk); });
-//                    $sheet->cell('D11', function($cell) { $cell->setValue($this->rate); });
-//                    $sheet->cell('D12', function($cell) { $cell->setValue('UNDEFINED'); });
                     $sheet->cell('D9', function($cell) { 
                         
                         $cell->setValue( $this->imp ); 
-                        
                         
                     });
                     $sheet->cell('D10', function($cell) { $cell->setValue( $this->clk ); });
@@ -255,8 +241,6 @@ class SingleBilanModel extends Model
                         $rep = $this->imp / (int) $vu;
                         
                         $cell->setValue( number_format( $rep , 2 ,"."," ") ); 
-                        
-                        
                         
                     });
                     
@@ -305,8 +289,7 @@ class SingleBilanModel extends Model
                     
                     $sheet->row($next_row, array('Website', 'Impressions','Clics', 'CTR') );
                     
-                    $WICC = $this->getWeImpCliTDC($next_row, $FICC['xxx'],$FICC['i_total'],$FICC['c_total'],$FICC['tx_percentage']);
-                    
+                    $WICC      = $this->getWeImpCliTDC($next_row, $FICC['xxx'],$FICC['i_total'],$FICC['c_total'],$FICC['tx_percentage']);
                     $total_row = $WICC['number'] + 1;
                     
                     $sheet->rows( $WICC['data'], NULL, "A{$WICC['next']}",FALSE,FALSE );
@@ -330,8 +313,24 @@ class SingleBilanModel extends Model
 
                     });
                     
+                    $next_row2 = $WICC['number'] + 4 ;
                     
-                    $footer_row = $WICC['number'] + 4 ;
+                    $sheet->cells("A{$next_row2}:D{$next_row2}", function($cells) {
+
+                        $cells->setBackground('#0085c1');
+                        $cells->setFontColor('#FFFFFF');
+                        
+                        $cells->setFont(array(
+                            'bold'       =>  true
+                        ));
+
+                    });
+                    
+                    $DICC      = $this->getDateImpCliTDC($next_row2, $FICC['xxx'],$FICC['i_total'],$FICC['c_total'],$FICC['tx_percentage']);
+                    
+                    $sheet->row($next_row2, array('Date', 'Impressions','Clics', 'CTR') );
+                    
+                    $footer_row = $WICC['number'] + 14 ;
                     
                     $sheet->mergeCells("A{$footer_row}:D{$footer_row}");
                      
@@ -402,6 +401,14 @@ class SingleBilanModel extends Model
         
         return $detail;
     }
+    
+   private function getDateImpCliTDC($row,$datax,$i_total,$c_total,$tx_percentage)
+   {
+       
+       var_dump($datax);
+       
+       die("TEst date impression");
+   } 
     
     
     private function getWeImpCliTDC($row,$datax,$i_total,$c_total,$tx_percentage)

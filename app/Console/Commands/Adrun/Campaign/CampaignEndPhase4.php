@@ -87,7 +87,7 @@ class CampaignEndPhase4 extends Command
             if(!is_null($fac)): $details[] = $fac; endif;
                 
         endforeach;
-      
+        
         if(!empty($details)):
             
             ReportModel::getInstance()->sendDailyEndOfCampaignReport($details);
