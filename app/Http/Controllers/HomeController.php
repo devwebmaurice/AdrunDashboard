@@ -51,7 +51,7 @@ class HomeController extends Controller
         //AdtechReportModel::getInstance()->generateReport($id = 0, $trigger = NULL,$master);
         
         
-        CampaignEndPhase4::getInstance()->handle();
+        //CampaignEndPhase4::getInstance()->handle();
       
         
         $campaigns = AdrunCampaignModel::getInstance()->getCampaignTermineYesterday();
