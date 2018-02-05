@@ -377,4 +377,13 @@ class AdrunCampaignModel extends Model
         
     }
     
+    public function setADRUNDownload($id,$status) 
+    {
+        
+        DB::table($this->tbl_campaign.' AS c')
+            ->where('id', $id)
+            ->update(['download' => $status]);
+        
+    }
+    
 }

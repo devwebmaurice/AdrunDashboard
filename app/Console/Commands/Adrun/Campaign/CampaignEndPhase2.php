@@ -68,26 +68,11 @@ class CampaignEndPhase2 extends Command
                 echo PHP_EOL ."---$campaign->cname---" . PHP_EOL;
                 
                 //Get flight from Master
-                $flights          = AdrunReportModel::getInstance()->getSlaveByMasterId($campaign->id_adtech);
+                $flights    = AdrunReportModel::getInstance()->getSlaveByMasterId($campaign->id_adtech);
+                $report_res = AdtechReportModel::getInstance()->generateReport($flights,$campaign->id_adtech);
                 
-                $i=0;
-                foreach( $flights as $flight ):
-                    
-                    if($i === 0):
-                     
-                        $report_res = AdtechReportModel::getInstance()->generateReport($flight->id,null,$campaign->id_adtech);
-                        
-                    else:
-                        
-                        continue;
-                        
-                    endif;
-                    
-                    var_dump($report_res);
-                    $i++;
-                    
-                endforeach;
-                
+               AdrunCampaignModel::getInstance()->setADRUNDownload($campaign->id,1);
+               
             endif;
             
         endforeach;

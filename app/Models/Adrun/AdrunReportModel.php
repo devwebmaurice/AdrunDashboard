@@ -90,7 +90,7 @@ class AdrunReportModel extends Model
     {
         
         $ids = DB::table($this->tbl_campaign.' AS c')
-            ->select('c.id')
+            ->select('c.id','c.id_adtech')
             ->where([
                 ['masterCampaignId','=', $id],
                 
@@ -120,21 +120,37 @@ class AdrunReportModel extends Model
     
     public function getImpressionPerWebsiteByCampaign($id)
     {
-        
-        
         $websites = DB::table($this->tbl_report_sum.' AS r')
             ->join($this->tbl_editeur.' AS e', 'r.websiteId', '=', 'e.id_adtech')
             ->join($this->tbl_campaign.' AS c', 'r.campaignId', '=', 'c.id_adtech')
-            //->select('r.websiteId', 'e.id_adtech', 'e.name AS editeur', DB::raw('SUM(r.imps) AS ti'),DB::raw('SUM(r.clicks) AS tc'),DB::raw('SUM(r.clicks)/SUM(r.imps) * 100 AS percentage') )
-            ->select('e.name AS editeur','r.*')
+             ->select('e.name AS editeur','r.*')
             ->where([
                 ['r.campaignId','=', $id],
                 
             ])
-            //->groupBy('r.websiteId','e.id_adtech', 'e.name')
             ->get();
     
         return $websites;
+    }
+    
+    public function getImpClickGroupByDate($master)
+    {
+        $values = DB::table($this->tbl_report_sum.' AS r')
+            ->join($this->tbl_campaign.' AS c', 'r.campaignId', '=', 'c.id_adtech')
+             ->select('c.masterCampaignId','r.*','r.adtech_day')
+            ->where([
+                ['c.masterCampaignId','=', $master],
+                
+            ])
+            ->orderBy('r.adtech_day', 'desc')    
+            ->get();
+        
+//        $values = \DB::select("select 'c.masterCampaignId','r.adtech_day','r.*' from `{$this->tbl_report_sum}` as `r` inner join
+//                               `{$this->tbl_campaign}` as `c` on `r`.`campaignId` = `c`.`id_adtech` 
+//                                WHERE (`c`.`masterCampaignId` = {$master}) order by `r`.`adtech_day` desc");
+        
+        
+        return $values;
     }
     
     public function addReportId($report, $campaign)

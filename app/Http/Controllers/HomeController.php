@@ -7,7 +7,6 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests;
 use Illuminate\Http\Request;
 use Illuminate\Mail\Mailer;
-//use App\Models\Adrun\AdrunADTECHCampaignModel;
 use App\Models\Adrun\AdrunCampaignModel;
 use App\Mail\AdrunDashboard;
 use App\Mail\AdrunAdvertiser;
@@ -15,18 +14,15 @@ use App\Mail\AdrunCampaign;
 use Mail;
 
 use App\Models\Adtech\AdtechNetworkModel;
-//use App\Models\Adtech\AdtechCustomerModel;
 use App\Models\Adtech\AdtechReportModel;
 use App\Models\Adtech\AdtecStatisticsModel;
-//use App\Models\Adrun\AdrunCustomerModel;
 use App\Models\Adrun\AdrunWebsiteModel;
 use App\Models\Adtech\AdtechWebsiteModel;
 use App\Models\SingleBilanModel;
 use Carbon\Carbon;
 use DateTime;
 
-use App\Console\Commands\adrun\DownloadMasterUV;
-use App\Console\Commands\Adrun\CampaignEndReport;
+use App\Console\Commands\Adrun\Campaign\CampaignEndPhase4;
 
 
 class HomeController extends Controller
@@ -55,7 +51,7 @@ class HomeController extends Controller
         //AdtechReportModel::getInstance()->generateReport($id = 0, $trigger = NULL,$master);
         
         
-        //SingleBilanModel::getInstance()->createBilan($campaign_id,$extra);
+        //CampaignEndPhase4::getInstance()->handle();
       
         
         $campaigns = AdrunCampaignModel::getInstance()->getCampaignTermineYesterday();
