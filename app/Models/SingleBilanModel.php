@@ -78,7 +78,7 @@ class SingleBilanModel extends Model
             
             Excel::create($namexcx, function($excel) use($campaign,$extra){
                 
-                $date = $this->createDateDetail($campaign->start, $campaign->end);
+                $date = $this->createDateDetail( $campaign->start, $campaign->end );
 
                 // Set the title
                 $excel->setTitle($this->detail['title']);
@@ -98,7 +98,6 @@ class SingleBilanModel extends Model
                     $objDrawing->setName("ADRUN");
                     $objDrawing->setDescription("ADRUN");                                                       
                     $objDrawing->setWorksheet($sheet);
-                    
                     
                     $sheet->setStyle(array(
                         'font' => array(
@@ -394,8 +393,6 @@ class SingleBilanModel extends Model
                 $excel->setActiveSheetIndex(0);
 
             })->store('xlsx', $this->report_campaign.$day.'/');
-            
-            die("phase five");
             
             return $this->detail;
         

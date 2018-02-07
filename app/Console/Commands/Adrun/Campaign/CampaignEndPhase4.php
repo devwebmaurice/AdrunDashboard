@@ -86,10 +86,6 @@ class CampaignEndPhase4 extends Command
                 
         endforeach;
         
-        var_dump( $campaigns );
-        
-        die('test One');
-        
         if(!empty($details)):
             
             ReportModel::getInstance()->sendDailyEndOfCampaignReport($details);
