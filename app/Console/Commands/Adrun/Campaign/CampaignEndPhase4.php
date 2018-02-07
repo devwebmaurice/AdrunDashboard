@@ -63,14 +63,12 @@ class CampaignEndPhase4 extends Command
         flush();
         
         $campaigns = AdrunCampaignModel::getInstance()->getCampaignTermineYesterday(2);
-        $details = [];
-        
-        $rep = [];
+        $details   = [];
+        $rep       = [];
         
         foreach ( $campaigns as $campaign ):
             
-            $xml=simplexml_load_file($campaign->resultURL . $this->format);
-        
+            $xml  = simplexml_load_file($campaign->resultURL . $this->format);
             $vu   = preg_replace('/\s+/','', $xml->table->row->cell[10][0]);
             $clic = preg_replace('/\s+/','',$xml->table->row->cell[8][0]);
             $imps = preg_replace('/\s+/','',$xml->table->row->cell[4][0]);
@@ -87,6 +85,10 @@ class CampaignEndPhase4 extends Command
             if(!is_null($fac)): $details[] = $fac; endif;
                 
         endforeach;
+        
+        var_dump( $campaigns );
+        
+        die('test One');
         
         if(!empty($details)):
             

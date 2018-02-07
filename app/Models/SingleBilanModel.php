@@ -10,6 +10,7 @@ use App\Models\Adrun\AdrunWebsiteModel;
 
 use Excel;
 use Carbon\Carbon;
+use PHPExcel_Worksheet_Drawing;
 
 class SingleBilanModel extends Model
 {
@@ -48,7 +49,6 @@ class SingleBilanModel extends Model
     //Create The Excel File
     public function createBilan($campaign_id,$extra)
     {
-        
         $day                  = Carbon::now()->subDays(2)->format('d-m-Y');
         $campaign             = AdrunCampaignModel::getInstance()->getADRUNCampaignByID($campaign_id);
         $this->campaign_id    = $campaign->cid_adtech;
@@ -72,8 +72,9 @@ class SingleBilanModel extends Model
         
         $namexcx = str_replace("/","_",$this->detail['name']);
         
+        //rmdir($this->report_campaign.$day);
+        
         if (!file_exists($this->report_campaign.$day.'/'.$namexcx.".xlsx")):
-            
             
             Excel::create($namexcx, function($excel) use($campaign,$extra){
                 
@@ -91,6 +92,14 @@ class SingleBilanModel extends Model
 
                 $excel->sheet($this->TAB_1, function ($sheet) use ($data,$date,$extra) {
 
+                    $objDrawing = new PHPExcel_Worksheet_Drawing;
+                    $objDrawing->setPath(public_path('img/Logo100x100.png')); //your image path
+                    $objDrawing->setCoordinates('D3');
+                    $objDrawing->setName("ADRUN");
+                    $objDrawing->setDescription("ADRUN");                                                       
+                    $objDrawing->setWorksheet($sheet);
+                    
+                    
                     $sheet->setStyle(array(
                         'font' => array(
                             'name'      =>  'Calibri',
@@ -100,15 +109,16 @@ class SingleBilanModel extends Model
                     
                     $sheet->setOrientation('landscape');
                     $sheet->mergeCells('A1:D1');
-                    $sheet->mergeCells('B3:D3');
-                    $sheet->mergeCells('B4:D4');
-                    $sheet->mergeCells('B5:D5');
-                    $sheet->mergeCells('B6:D6');
+                    $sheet->mergeCells('B3:C3');
+                    $sheet->mergeCells('B4:C4');
+                    $sheet->mergeCells('B5:C5');
+                    $sheet->mergeCells('B6:C6');
+                    $sheet->mergeCells('D3:D6');
                     $sheet->setBorder('A2:B4', 'thin');
                     
                     $sheet->cells('A3:A6', function($cells) {
 
-                        $cells->setBackground('#cde4f2');
+                        $cells->setBackground('#D8D8D8');
                         $cells->setFontColor('#00538c');
 
                     });
@@ -121,16 +131,16 @@ class SingleBilanModel extends Model
                     
                     $sheet->cells('A9:D13', function($cells) {
 
-                        $cells->setBackground('#0085c1');
-                        $cells->setFontColor('#FFFFFF');
+                        //$cells->setBackground('#0085c1');
+                        $cells->setFontColor('#000000');
                         $cells->setAlignment('left');
 
                     });
                     
                     $sheet->cells('A16:D16', function($cells) {
 
-                        $cells->setBackground('#0085c1');
-                        $cells->setFontColor('#FFFFFF');
+                        $cells->setBackground('#D8D8D8');
+                        $cells->setFontColor('#000000');
                         
                         $cells->setFont(array(
                             'bold'       =>  true
@@ -191,6 +201,13 @@ class SingleBilanModel extends Model
                         $cell->setAlignment('center');
 
                     });
+                    
+                    $sheet->cell('D3', function($cell) {
+                        
+                        $cell->setAlignment('center');
+
+                    });
+                    
 
                     $sheet->row(3, array( 'Annonceur :', $this->detail['annoceur_label'] ));
                     $sheet->row(4, array( 'Campagne :', $this->detail['campagne'] .' '.$this->detail['devis'] ));
@@ -199,7 +216,7 @@ class SingleBilanModel extends Model
                     
                     $sheet->cell('A8', function($cell) {
                         // manipulate the cell
-                        $cell->setValue($this->TAB_1_SUB_1_TITLE);
+                        //$cell->setValue($this->TAB_1_SUB_1_TITLE);
                         // Set font
                         $cell->setFont(array(
                             'family'     => 'Calibri',
@@ -247,7 +264,7 @@ class SingleBilanModel extends Model
                     
                     $sheet->cell('A15', function($cell) {
                         // manipulate the cell
-                        $cell->setValue('////// > Détails par Insertion');
+                        //$cell->setValue('////// > Détails par Insertion');
                         // Set font
                         $cell->setFont(array(
                             'family'     => 'Calibri',
@@ -279,8 +296,8 @@ class SingleBilanModel extends Model
                     
                     $sheet->cells("A{$next_row}:D{$next_row}", function($cells) {
 
-                        $cells->setBackground('#0085c1');
-                        $cells->setFontColor('#FFFFFF');
+                        $cells->setBackground('#D8D8D8');
+                        $cells->setFontColor('#000000');
                         
                         $cells->setFont(array(
                             'bold'       =>  true
@@ -318,8 +335,8 @@ class SingleBilanModel extends Model
                     
                     $sheet->cells("A{$next_row2}:D{$next_row2}", function($cells) {
 
-                        $cells->setBackground('#0085c1');
-                        $cells->setFontColor('#FFFFFF');
+                        $cells->setBackground('#D8D8D8');
+                        $cells->setFontColor('#000000');
                         
                         $cells->setFont(array(
                             'bold'       =>  true
@@ -377,6 +394,8 @@ class SingleBilanModel extends Model
                 $excel->setActiveSheetIndex(0);
 
             })->store('xlsx', $this->report_campaign.$day.'/');
+            
+            die("phase five");
             
             return $this->detail;
         
