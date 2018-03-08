@@ -95,7 +95,7 @@ class AdrunCampaignModel extends Model
     {
         $campaigns = DB::table($this->tbl_campaign.' AS c')
             ->join( $this->tbl_advertiser.' AS a', 'c.advertiserId', '=', 'a.id_adtech' )
-            ->select('c.resultURL','c.download','c.id_adtech AS id_adtech','c.id AS id','c.name AS cname','a.name AS aname','c.adrunStartDate AS start','c.adrunEndDate AS end','c.absoluteStartDate','c.absoluteEndDate','a.categorie AS categorie')
+            ->select('c.resultURL','c.download','c.downloadURL','c.id_adtech AS id_adtech','c.id AS id','c.name AS cname','a.name AS aname','c.adrunStartDate AS start','c.adrunEndDate AS end','c.absoluteStartDate','c.absoluteEndDate','a.categorie AS categorie')
             ->whereBetween('absoluteEndDate', array(Carbon::now()->subDays($date)->endOfDay(), Carbon::now()->subDays(1)->endOfDay()))
             ->where('masterCampaignId', '=', -1)
             ->orderBy('c.absoluteEndDate', 'desc')
@@ -180,6 +180,15 @@ class AdrunCampaignModel extends Model
             ->update(['masterCampaignId' => $masterCampaignId,'natureType' => $natureType]);
         
     }
+    
+    public function setADRUNDownloadURL($id,$url) 
+    {
+        DB::table($this->tbl_campaign)
+            ->where('id', $id)
+            ->update(['downloadURL' => $url]);
+        
+    }
+    
     
     public function setADRUNCampaignTime() 
     {

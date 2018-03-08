@@ -36,6 +36,8 @@ class SingleBilanModel extends Model
         
         $this->report_main_path  = ( $_SERVER['APP_ENV'] === 'local' ) ? base_path()."/adrun" : '/var/www/html/adrun/services/dashboard/adrun';
         $this->report_campaign   = $this->report_main_path . "/campaign/";
+        
+        $this->section_path      = base_path('app/Models/partials/bilan');
     }
     
     public static function getInstance()
@@ -47,13 +49,13 @@ class SingleBilanModel extends Model
     }
     
     //Create The Excel File
-    public function createBilan($campaign_id,$extra)
+    public function createBilan($campaign_id, $extra ,$path = true)
     {
         $day                  = Carbon::now()->subDays(2)->format('d-m-Y');
         $campaign             = AdrunCampaignModel::getInstance()->getADRUNCampaignByID($campaign_id);
         $this->campaign_id    = $campaign->cid_adtech;
         $this->detail         = $this->createFileDetail($campaign,$day);
-        $this->extra         = $extra;
+        $this->extra          = $extra;
         
         if(!is_dir($this->report_main_path)):
 
@@ -70,22 +72,35 @@ class SingleBilanModel extends Model
         
         endif;
         
-        $namexcx = str_replace("/","_",$this->detail['name']);
+        $namexcx       = str_replace("/","_",$this->detail['name']);
         
-        //rmdir($this->report_campaign.$day);
+        if( $path === true ):
+            
+            $path_trigger  = $this->report_campaign.$day;
+            
+         else:
+            
+            $path_trigger  = $this->report_campaign.$path;
+         
+            if (file_exists ($path_trigger.'/'.$namexcx.".xlsx")):
+
+                unlink($path_trigger.'/'.$namexcx.".xlsx");
+
+            endif;
+            
+            
+        endif;
         
-        if (!file_exists($this->report_campaign.$day.'/'.$namexcx.".xlsx")):
+        AdrunCampaignModel::getInstance()->setADRUNDownloadURL($campaign_id, $namexcx);
+        
+        if (!file_exists($path_trigger.'/'.$namexcx.".xlsx")):
             
             Excel::create($namexcx, function($excel) use($campaign,$extra){
                 
                 $date = $this->createDateDetail( $campaign->start, $campaign->end );
 
-                // Set the title
                 $excel->setTitle($this->detail['title']);
-
-                // Chain the setters
                 $excel->setCreator($this->creator)->setCompany($this->company);
-
                 $excel->setDescription($this->detail['description']);
 
                 $data = [ ];
@@ -93,130 +108,95 @@ class SingleBilanModel extends Model
                 $excel->sheet($this->TAB_1, function ($sheet) use ($data,$date,$extra) {
 
                     $objDrawing = new PHPExcel_Worksheet_Drawing;
-                    $objDrawing->setPath(public_path('img/Logo100x100.png')); //your image path
-                    $objDrawing->setCoordinates('D3');
-                    $objDrawing->setName("ADRUN");
-                    $objDrawing->setDescription("ADRUN");                                                       
-                    $objDrawing->setWorksheet($sheet);
+                    $objDrawing->setPath( public_path('img/header-style-1.png') );
+                    $objDrawing->setCoordinates( 'A1' );
+                    $objDrawing->setName( "ADRUN" );
+                    $objDrawing->setDescription( "ADRUN" );  
+                    $objDrawing->setWorksheet( $sheet );
                     
-                    $sheet->setStyle(array(
-                        'font' => array(
-                            'name'      =>  'Calibri',
-                            'size'      =>  13,
-                        )
-                    ));
+                    $sheet->setStyle(array( 'font' => array( 'name' =>  'Calibri', 'size'      =>  13, )  ));
                     
-                    $sheet->setOrientation('landscape');
-                    $sheet->mergeCells('A1:D1');
-                    $sheet->mergeCells('B3:C3');
-                    $sheet->mergeCells('B4:C4');
-                    $sheet->mergeCells('B5:C5');
-                    $sheet->mergeCells('B6:C6');
-                    $sheet->mergeCells('D3:D6');
-                    $sheet->setBorder('A2:B4', 'thin');
+                    $sheet->setOrientation('portrait');
+                    $sheet->mergeCells('A1:F1');
+                    $sheet->mergeCells('B3:E3');
                     
-                    $sheet->cells('A3:A6', function($cells) {
-
-                        $cells->setBackground('#D8D8D8');
-                        $cells->setFontColor('#00538c');
-
-                    });
-                    
-                    $sheet->cells('B3:B6', function($cells) {
-
-                        $cells->setFontColor('#00538c');
-
-                    });
+                    $sheet->cells('B3:B6', function($cells) { $cells->setFontColor('#00538c'); });
                     
                     $sheet->cells('A9:D13', function($cells) {
-
-                        //$cells->setBackground('#0085c1');
                         $cells->setFontColor('#000000');
                         $cells->setAlignment('left');
 
                     });
                     
-                    $sheet->cells('A16:D16', function($cells) {
-
-                        $cells->setBackground('#D8D8D8');
-                        $cells->setFontColor('#000000');
-                        
-                        $cells->setFont(array(
-                            'bold'       =>  true
-                        ));
-
-                    });
-                    
-                    $sheet->cells('A9:A13', function($cells) {
-                        
-                        $cells->setFont(array(
-                            'bold'       =>  true
-                        ));
-                        
-                    });
+                    $sheet->cells('A9:A13', function($cells) { $cells->setFont(array( 'bold'       =>  true )); });
                     
                     // Set width for multiple cells
                     $sheet->setWidth(array(
-                        'A'     =>  25,
+                        'A'     =>  5,
                         'B'     =>  25,
                         'C'     =>  25,
-                        'D'     =>  25
+                        'D'     =>  25,
+                        'E'     =>  25,
+                        'F'     =>  5
                     ));
+                    
+                    // Set height for a single row
+                    $sheet->setHeight(1, 110);
+                    // Set font with ->setStyle()`
+                    $sheet->setStyle(array( 'font' => array( 'name'      =>  'Calibri', 'size'      =>  13, ) ));
+                    
+                    $sheet->cell('B3', function($cell) { $cell->setFont(array( 'bold'  =>  true )); });
+                    
+                    $sheet->cell('B3', function($cell) {
+                        // manipulate the cell
+                        $cell->setValue('Annonceur');
+                        // Set font
+                        $cell->setFont(array(
+                            'family'     => 'Calibri',
+                            'size'       => '17',
+                            'bold'       =>  true
+                        ));
+                        
+                        $cell->setFontColor('#4B88C7');
+                        $cell->setAlignment('left');
+
+                    });
                     
                     // Set height for multiple rows
                     $sheet->setHeight(array(
-                        
+                        4     =>  3,
+                        5     => 40,
+                        11    => 70,
+                        15    =>  3,
+                        16    => 40,
                     ));
                     
-                    // Set font with ->setStyle()`
-                    $sheet->setStyle(array(
-                        'font' => array(
-                            'name'      =>  'Calibri',
-                            'size'      =>  13,
-                        )
-                    ));
+                    //Banner Seperator 
+                    $sheet->cell('B4', function($cell) { $cell->setBackground('#00538C'); });
+                    $sheet->cell('C4', function($cell) { $cell->setBackground('#3953A4'); });
+                    $sheet->cell('D4', function($cell) { $cell->setBackground('#4C86C6'); });
+                    $sheet->cell('E4', function($cell) { $cell->setBackground('#AED8E6'); });
+                    //Banner Seperator 
+                    $sheet->cell('B15', function($cell) { $cell->setBackground('#00538C'); });
+                    $sheet->cell('C15', function($cell) { $cell->setBackground('#3953A4'); });
+                    $sheet->cell('D15', function($cell) { $cell->setBackground('#4C86C6'); });
+                    $sheet->cell('E15', function($cell) { $cell->setBackground('#AED8E6'); });
                     
-                    $sheet->cell('B3', function($cell) {
+                    //WEBSITE BANNER
+                    $sheet->cells("B5:E5", function($cells) {
                         
-                        // Set font
-                        $cell->setFont(array(
-                            'bold'       =>  true
-                        ));
+                        $cells->setValignment('center');
+                        $cells->setFontColor('#00538C');
+                        $cells->setBackground('#F0F8FF');
+                        $cells->setFont(array( 'bold' => true ));
 
                     });
-                    
-                    $sheet->cell('A1', function($cell) {
-                        // manipulate the cell
-                        $cell->setValue($this->TAB_1_TITLE);
-                        // Set font
-                        $cell->setFont(array(
-                            'family'     => 'Calibri',
-                            'size'       => '19',
-                            'bold'       =>  true
-                        ));
-                        
-                        $cell->setBackground('#00538c');
-                        $cell->setFontColor('#ffffff');
-                        $cell->setAlignment('center');
-
-                    });
-                    
-                    $sheet->cell('D3', function($cell) {
-                        
-                        $cell->setAlignment('center');
-
-                    });
-                    
-
-                    $sheet->row(3, array( 'Annonceur :', $this->detail['annoceur_label'] ));
-                    $sheet->row(4, array( 'Campagne :', $this->detail['campagne'] .' '.$this->detail['devis'] ));
-                    $sheet->row(5, array( 'Début :', $date['start']));
-                    $sheet->row(6, array( 'Fin :', $date['end'] ));
+                    //Banner Seperator 
+                    $sheet->row(5, array( '', 'NOM','CAMPAIGN' , 'DATE DE DÉBUT', 'DATE DE FIN' ));
+                    $sheet->row(6, array( '', $this->detail['annoceur_label'],$this->detail['campagne'], $date['start'], $date['end']));
                     
                     $sheet->cell('A8', function($cell) {
-                        // manipulate the cell
-                        //$cell->setValue($this->TAB_1_SUB_1_TITLE);
-                        // Set font
+                    
                         $cell->setFont(array(
                             'family'     => 'Calibri',
                             'size'       => '9',
@@ -225,179 +205,23 @@ class SingleBilanModel extends Model
 
                     });
                     
-                    $sheet->cell('A9', function($cell) { $cell->setValue('Impressions'); });
-                    $sheet->cell('A10', function($cell) { $cell->setValue('Clics'); });
-                    $sheet->cell('A11', function($cell) { $cell->setValue('CTR'); });
-                    $sheet->cell('A12', function($cell) { $cell->setValue('Visiteurs Uniques'); });
-                    $sheet->cell('A13', function($cell) { $cell->setValue('Répétition'); });
-                    
-                    $FICC       = $this->getFlImpCliTDC();
-                    $this->imp  = $FICC['total'][1];
-                    $this->clk  = $FICC['total'][2];
-                    $this->rate = $FICC['total'][3];
-                    
-                    $sheet->cell('D9', function($cell) { 
-                        
-                        $cell->setValue( $this->imp ); 
-                        
-                    });
-                    $sheet->cell('D10', function($cell) { $cell->setValue( $this->clk ); });
-                    $sheet->cell('D11', function($cell) { $cell->setValue( $this->rate ); });
-                    $sheet->cell('D12', function($cell) { 
-                       
-                        $vu = preg_replace('/\s+/u', '', $this->extra['vu']);
-                        
-                        $cell->setValue( number_format($vu, 0 ," "," ") ); 
-                        
-                    });
-                    $sheet->cell('D13', function($cell) { 
-                        
-                        $vu        = (int) preg_replace('/\s+/u', '', $this->extra['vu']);
-                        $this->imp = str_replace(' ','',$this->imp);
-                        
-                        $rep = $this->imp / (int) $vu;
-                        
-                        $cell->setValue( number_format( $rep , 2 ,"."," ") ); 
-                        
-                    });
-                    
-                    $sheet->cell('A15', function($cell) {
-                        // manipulate the cell
-                        //$cell->setValue('////// > Détails par Insertion');
-                        // Set font
-                        $cell->setFont(array(
-                            'family'     => 'Calibri',
-                            'size'       => '9',
-                            'bold'       =>  false
-                        ));
-
-                    });
-                    
-                    $sheet->row(16, array('Flight', 'Impressions','Clics', 'CTR') );
-                    
-                    $sheet->fromArray( $FICC['data'], NULL, 'A17',FALSE,FALSE );
-                    
-                    $sheet->cells("B{$FICC['number']}:D{$FICC['number']}", function($cells) {
-
-                        $cells->setBorder('solid', 'none', 'solid', 'none');
-                        // Set alignment to center
-                        $cells->setAlignment('right');
-                        
-                        $cells->setFont(array(
-                            'bold'       =>  true
-                        ));
-
-                    });
-                    
-                    $sheet->row($FICC['number'], $FICC['total'] );
-                    
-                    $next_row = $FICC['number'] + 2 ;
-                    
-                    $sheet->cells("A{$next_row}:D{$next_row}", function($cells) {
-
-                        $cells->setBackground('#D8D8D8');
-                        $cells->setFontColor('#000000');
-                        
-                        $cells->setFont(array(
-                            'bold'       =>  true
-                        ));
-
-                    });
-                    
-                    $sheet->row($next_row, array('Website', 'Impressions','Clics', 'CTR') );
-                    
-                    $WICC      = $this->getWeImpCliTDC($next_row, $FICC['xxx'],$FICC['i_total'],$FICC['c_total'],$FICC['tx_percentage']);
-                    $total_row = $WICC['number'] + 1;
-                    
-                    $sheet->rows( $WICC['data'], NULL, "A{$WICC['next']}",FALSE,FALSE );
-                    
-                    $sheet->row($total_row, $WICC['total'] );
-                    
-                    $sheet->cells("A{$total_row}:D{$total_row}", function($cells) {
-                        
-                        $cells->setBorder('solid', 'none', 'solid', 'none');
-                        // Set alignment to center
-                        $cells->setAlignment('right');
-                        $cells->setFont(array(
-                            'bold'       =>  true
-                        ));
-
-                    });
-                    
-                    $sheet->cells("A{$WICC['next']}:D{$WICC['number']}", function($cells) {
-
-                        $cells->setAlignment('left');
-
-                    });
-                    
-                    $next_row2 = $WICC['number'] + 3 ;
-                    
-                    $sheet->cells("A{$next_row2}:D{$next_row2}", function($cells) {
-
-                        $cells->setBackground('#D8D8D8');
-                        $cells->setFontColor('#000000');
-                        
-                        $cells->setFont(array(
-                            'bold'       =>  true
-                        ));
-
-                    });
-                    
-                    $sheet->row($next_row2, array('Date', 'Impressions','Clics', 'CTR') );
-                    
-                    $DICC       = $this->getDateImpCliTDC($next_row2,$FICC['i_total'],$FICC['c_total'],$FICC['tx_percentage']);
-                    $total_rowx = $DICC['number'] + 1;
-                    $sheet->rows( $DICC['data'], NULL, "A{$DICC['next']}",FALSE,FALSE );
-                    $sheet->row($total_rowx, $DICC['total'] );
-                    
-                   $sheet->cells("A{$total_rowx}:D{$total_rowx}", function($cells) {
-                        
-                        $cells->setBorder('solid', 'none', 'solid', 'none');
-                        // Set alignment to center
-                        $cells->setAlignment('right');
-                        $cells->setFont(array(
-                            'bold'       =>  true
-                        ));
-
-                    });
-                    
-                    $sheet->cells("A{$DICC['next']}:D{$DICC['number']}", function($cells) {
-
-                        $cells->setAlignment('left');
-
-                    });
-                    
-                    $footer_row = $DICC['number'] + 4 ;
-                    
-                    $sheet->mergeCells("A{$footer_row}:D{$footer_row}");
-                     
-                    $sheet->cell("A{$footer_row}", function($cell) {
-                        // manipulate the cell
-                        $cell->setValue('ADRUN Inteligence Dashboard');
-                        
-                        $cell->setAlignment('center');
-                        $cell->setValignment('center');
-                        // Set font
-                        $cell->setFont(array(
-                            'family'     => 'Calibri',
-                            'size'       => '7'
-                        ));
-                        
-                    });
-                    
-                    $sheet->setHeight($footer_row, 50); 
-                    
+                    require_once( $this->section_path .'/SectionOne.php');
+                    require_once( $this->section_path .'/SectionTwo.php');
+                    require_once( $this->section_path .'/SectionThree.php');
+                    require_once( $this->section_path .'/SectionFooter.php');
                     
                 });
 
                 $excel->setActiveSheetIndex(0);
 
-            })->store('xlsx', $this->report_campaign.$day.'/');
-            
+            })->store('xlsx', $path_trigger.'/');
+            //})->export('pdf', $path_trigger.'/');
+               
             return $this->detail;
         
          endif;
          
+      
          
             return null;
     }
@@ -481,19 +305,17 @@ class SingleBilanModel extends Model
            
            $percentage = $value['sum_click'] / $value['sum_imps'] * 100;
        
-            $final[] =   [
-                             'WEBSITE'        => $value['date'], 
-                             'IMPRESSIONS'   =>  number_format($value['sum_imps'], 0 ," "," "), 
-                             'CLICS'         =>  number_format($value['sum_click'], 0 ," "," "), 
-                             'TAUX DE CLICS' =>  number_format($percentage,2).' %'
+            $final[] =   [  
+                
+                            'BREAK'         => '',
+                            'WEBSITE'       => $value['date'], 
+                            'IMPRESSIONS'   =>  number_format($value['sum_imps'], 0 ," "," "), 
+                            'CLICS'         =>  number_format($value['sum_click'], 0 ," "," "), 
+                            'TAUX DE CLICS' =>  number_format($percentage,2).' %'
                          ];
             
             $total_clicks = isset( $compile['total'][2] ) ? $compile['total'][2] : $total_clicks ;
             $total_imps = isset( $compile['total'][1] ) ? $compile['total'][1] : $total_imps ;
-            
-            
-//            $i_total = $total_imps + $value['sum_imps'];
-//            $c_total = $total_clicks + $value['sum_click'];
             
        endforeach;
        
@@ -501,10 +323,9 @@ class SingleBilanModel extends Model
         $compile['number'] = count($final) + $row;
         $compile['next']   = $row + 1;
         $compile['data']   = $final;
-        $compile['total']  = array('', number_format($i_total, 0 ," "," "), number_format($c_total, 0 ," "," "), number_format($tx_percentage, 2).' %' ) ;
+        $compile['total']  = array('','TOTAL', number_format($i_total, 0 ," "," "), number_format($c_total, 0 ," "," "), number_format($tx_percentage, 2).' %' ) ;
         
-
-        return $compile;
+    return $compile;
    } 
     
     /*
@@ -635,7 +456,6 @@ class SingleBilanModel extends Model
                         'TAUX DE CLICS' =>  number_format($t_percentage,2).' %'
                     ];
             
-            
         endforeach; 
         
         $datas = $this->multid_sort($data, 'IMPRESSIONS');
@@ -645,6 +465,7 @@ class SingleBilanModel extends Model
         foreach ($datas as $data):
             
             $quality[]= [
+                            'BREAK'         =>  '',
                             'WEBSITE'       => $data['WEBSITE'],
                             'IMPRESSIONS'   => number_format($data['IMPRESSIONS'], 0 ," "," "),
                             'CLICS'         => $data['CLICS'],
@@ -657,7 +478,7 @@ class SingleBilanModel extends Model
         $compile['number'] = count($quality) + $row;
         $compile['next']   = $row + 1;
         $compile['data']   = $quality;
-        $compile['total']  = array('', number_format($i_total, 0 ," "," "), number_format($c_total, 0 ," "," "), number_format($tx_percentage, 2).' %' ) ;
+        $compile['total']  = array('','TOTAL', number_format($i_total, 0 ," "," "), number_format($c_total, 0 ," "," "), number_format($tx_percentage, 2).' %' ) ;
         
         return $compile;
         
@@ -694,15 +515,16 @@ class SingleBilanModel extends Model
         endforeach;
           
         $tx_percentage    = $c_total / $i_total * 100;
+        $fine_tune_data   = $this->FlImpCliFineTunning( $data );
 
         $compile                  = [];
         $compile['xxx']           = $datax;
-        $compile['number']        = count($data) + 17;
-        $compile['data']          = $data;
+        $compile['number']        = count($fine_tune_data) + 17;
+        $compile['data']          = $fine_tune_data;
         $compile['i_total']       = $i_total;
         $compile['c_total']       = $c_total;
         $compile['tx_percentage'] = $tx_percentage;
-        $compile['total']         = array('', number_format($i_total, 0 ," "," "), number_format($c_total, 0 ," "," "), number_format($tx_percentage, 2).' %' );
+        $compile['total']         = array('','TOTAL', number_format($i_total, 0 ," "," "), number_format($c_total, 0 ," "," "), number_format($tx_percentage, 2).' %' );
         
         return $compile;
         
@@ -790,6 +612,63 @@ class SingleBilanModel extends Model
             
             
         endforeach;
+        
+    }
+    
+    public function FlImpCliFineTunning ( $datas ) {
+        
+        $finetune = [];
+        $imp = 0;
+        
+        foreach( $datas as $data ):
+            
+            $data["IMPRESSIONS"] = (int) str_replace(" ","",$data["IMPRESSIONS"]);
+            $data["CLICS"]       = (int) str_replace(" ","",$data["CLICS"]);
+            
+            $params = explode("_",$data["FLIGHT"]);
+            
+            if(end($params) != 'OFFERT'):
+                
+                $finetune[$params[0]]['IMPRESSIONS'] = (isset($finetune[$params[0]]['IMPRESSIONS'])) ? $finetune[$params[0]]['IMPRESSIONS'] : 0;
+                $finetune[$params[0]]['CLICS']       = (isset($finetune[$params[0]]['CLICS'])) ? $finetune[$params[0]]['CLICS'] : 0;
+
+                $finetune[$params[0]]['NAME']        = $params[0];
+                $finetune[$params[0]]['IMPRESSIONS'] = $finetune[$params[0]]['IMPRESSIONS'] += $data["IMPRESSIONS"];
+                $finetune[$params[0]]['CLICS']       = $finetune[$params[0]]['CLICS'] += $data["CLICS"];
+            
+            elseif(end($params) === 'OFFERT'):
+                
+                $finetune[$params[0].'-OFFERT']['IMPRESSIONS'] = (isset($finetune[$params[0].'-OFFERT']['IMPRESSIONS'])) ? $finetune[$params[0].'-OFFERT']['IMPRESSIONS'] : 0;
+                $finetune[$params[0].'-OFFERT']['CLICS']       = (isset($finetune[$params[0].'-OFFERT']['CLICS'])) ? $finetune[$params[0].'-OFFERT']['CLICS'] : 0;
+
+                $finetune[$params[0].'-OFFERT']['NAME']        = $params[0].'-OFFERT';
+                $finetune[$params[0].'-OFFERT']['IMPRESSIONS'] = $finetune[$params[0].'-OFFERT']['IMPRESSIONS'] += $data["IMPRESSIONS"];
+                $finetune[$params[0].'-OFFERT']['CLICS']       = $finetune[$params[0].'-OFFERT']['CLICS'] += $data["CLICS"];
+                
+                
+            else:
+                
+                
+                
+            endif;
+            
+        endforeach;
+        
+        foreach( $finetune as $value):
+            
+            $percentage   = ( $value["CLICS"] / $value["IMPRESSIONS"] ) * 100;
+        
+            $datat[]   =   [
+                    'BREAK'        => '',
+                    'FLIGHT'        => $value["NAME"], 
+                    'IMPRESSIONS'   =>  number_format($value["IMPRESSIONS"] , 0 ," "," "), 
+                    'CLICS'         =>  number_format($value["CLICS"], 0 ," "," "), 
+                    'TAUX DE CLICS' => isset($percentage) ? number_format($percentage, 2).' %' : number_format('0', 2).' %'
+                ];
+        
+        endforeach;
+        
+        return $datat;
         
     }
     

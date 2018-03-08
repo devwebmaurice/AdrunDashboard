@@ -22,7 +22,9 @@ use App\Models\SingleBilanModel;
 use Carbon\Carbon;
 use DateTime;
 
+use App\Console\Commands\Adrun\Campaign\CampaignTestAction;
 use App\Console\Commands\Adrun\Campaign\CampaignEndPhase4;
+
 
 
 class HomeController extends Controller
@@ -48,11 +50,7 @@ class HomeController extends Controller
     {
         $month = new Carbon('last month');
         
-        //AdtechReportModel::getInstance()->generateReport($id = 0, $trigger = NULL,$master);
-        
-        
-        //CampaignEndPhase4::getInstance()->handle();
-      
+        //CampaignTestAction::getInstance()->handle(3030);
         
         $campaigns = AdrunCampaignModel::getInstance()->getCampaignTermineYesterday();
         $editeurs  = AdrunWebsiteModel::getInstance()->getAllEditeursLastMonth();
