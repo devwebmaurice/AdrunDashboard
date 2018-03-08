@@ -61,17 +61,15 @@
                                        
 <!--                                        <td>{{ App\Models\Adrun\AdrunReportModel::getInstance()->getImpression($campaign->id_adtech) }}</td>-->
                                     <td>MASTER CAMPAIGN</td>
-                                        <td>{{ Carbon\Carbon::parse($campaign->start)->format('d-m-Y')  }}</td>
-                                        <td>{{ Carbon\Carbon::parse($campaign->end)->format('d-m-Y')}}</td>
-                                        <td>
-                                            {!! Form::open(array(
-                                                'style' => 'display: inline-block;',
-                                                'method' => 'DELETE',
-                                                'onsubmit' => "return confirm('".trans("global.app_are_you_sure")."');",
-                                                'route' => ['admin.editeur.destroy', $campaign->id])) !!}
-                                            {!! Form::submit(trans('Download'), array('class' => 'btn btn-xs btn-warning')) !!}
-                                            {!! Form::close() !!}
-                                        </td>
+                                    <td>{{ Carbon\Carbon::parse($campaign->start)->format('d-m-Y')  }}</td>
+                                    <td>{{ Carbon\Carbon::parse($campaign->end)->format('d-m-Y')}}</td>
+                                    <td>
+                                        <a href="http://test.adrun.re/dashboard/adrun/campaign/{{ Carbon\Carbon::parse($campaign->end)->format('d-m-Y')}}/{{ $campaign->downloadURL }}.xlsx" target="_new" class="btn btn-warning btn-xs">
+                                            <span class="glyphicon glyphicon-cloud-download"></span> Télécharger
+                                        </a>
+
+                                        
+                                    </td>
 
                                     </tr>
                                 @endforeach

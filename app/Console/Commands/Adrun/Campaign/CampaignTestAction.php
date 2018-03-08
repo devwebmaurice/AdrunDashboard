@@ -11,14 +11,14 @@ use App\Models\SingleBilanModel;
 use App\Models\Mail\ReportModel;
 use App\Models\Adrun\AdrunReportModel;
 
-class CampaignEndPhase4 extends Command
+class CampaignTestAction extends Command
 {
     /**
      * The name and signature of the console command.
      *
      * @var string
      */
-    protected $signature = 'adrun:campaignEndPhase4';
+    protected $signature = 'adrun:campaignTestAction';
 
     /**
      * The console command description.
@@ -56,35 +56,27 @@ class CampaignEndPhase4 extends Command
      *
      * @return mixed
      */
-    public function handle()
+    public function handle($id)
     {
-        
         echo PHP_EOL ."---START MISSION--" . PHP_EOL;
         flush();
         
-        $campaigns = AdrunCampaignModel::getInstance()->getCampaignTermineYesterday(2);
-        $details   = [];
-        $rep       = [];
+        $campaign = AdrunCampaignModel::getInstance()->getADRUNCampaignByID($id);
+        $xml      = simplexml_load_file($campaign->resultURL . $this->format);
+        $vu       = preg_replace('/\s+/','', $xml->table->row->cell[10][0]);
+        $clic     = preg_replace('/\s+/','',$xml->table->row->cell[8][0]);
+        $imps     = preg_replace('/\s+/','',$xml->table->row->cell[4][0]);
         
-        foreach ( $campaigns as $campaign ):
-            
-            $xml  = simplexml_load_file($campaign->resultURL . $this->format);
-            $vu   = preg_replace('/\s+/','', $xml->table->row->cell[10][0]);
-            $clic = preg_replace('/\s+/','',$xml->table->row->cell[8][0]);
-            $imps = preg_replace('/\s+/','',$xml->table->row->cell[4][0]);
-            
-            
-            $rep = [ 
+        $rep = [ 
                 'vu'   => $vu,
                 'clic' => $clic,
                 'imps' => $imps,
                 ];
             
-            $fac = SingleBilanModel::getInstance()->createBilan($campaign->id, $rep);
+        $fac = SingleBilanModel::getInstance()->createBilan($campaign->id, $rep, 'test');
         
-            if(!is_null($fac)): $details[] = $fac; endif;
+        if( !is_null( $fac ) ): $details[] = $fac; endif;
                 
-        endforeach;
         
         if(!empty($details)):
             
@@ -97,3 +89,5 @@ class CampaignEndPhase4 extends Command
         
     }
 }
+
+

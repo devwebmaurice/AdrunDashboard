@@ -27,6 +27,7 @@ class Kernel extends ConsoleKernel
         '\App\Console\Commands\Adrun\Campaign\CampaignEndPhase2',
         '\App\Console\Commands\Adrun\Campaign\CampaignEndPhase3',
         '\App\Console\Commands\Adrun\Campaign\CampaignEndPhase4',
+        '\App\Console\Commands\Adrun\Campaign\CampaignTestAction',
         
     ];
 

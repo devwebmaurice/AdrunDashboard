@@ -58,8 +58,8 @@ return [
 //        'Virginie Cuinet'           => 'v.cuinet@adrun.re',
 //        'Laurent Trotzier'          => 'l.trotzier@adrun.re',
         'Yoann HAPOLD'              => 'devweb@adrun.re',
-        'Linda Santoulangue'        => 'traffic@adrun.re',
-        'Jacques Rima'              => 'devwebmaurice@adrun.re',
+        'Linda SANTOULANGUE'        => 'traffic@adrun.re',
+        'Jacques RIMA'              => 'devwebmaurice@adrun.re',
         'Mara Natacha SEEVATHEEAN ' => 'm.seevatheean@nrj.mu',
     ],
     
