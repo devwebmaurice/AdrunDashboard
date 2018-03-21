@@ -24,6 +24,7 @@ use DateTime;
 
 use App\Console\Commands\Adrun\Campaign\CampaignTestAction;
 use App\Console\Commands\Adrun\Campaign\CampaignEndPhase4;
+use App\Console\Commands\Adrun\Dashboard;
 
 
 
@@ -51,6 +52,7 @@ class HomeController extends Controller
         $month = new Carbon('last month');
         
         //CampaignTestAction::getInstance()->handle(3030);
+        //Dashboard::getInstance()->handle();
         
         $campaigns = AdrunCampaignModel::getInstance()->getCampaignTermineYesterday();
         $editeurs  = AdrunWebsiteModel::getInstance()->getAllEditeursLastMonth();

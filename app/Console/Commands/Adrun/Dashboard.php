@@ -2,18 +2,13 @@
 
 namespace App\Console\Commands\adrun;
 
-use Illuminate\Console\Command;
-use App\Models\Adrun\AdrunCampaignModel;
 use Carbon\Carbon;
 use DateTime;
-use App\Models\Adtech\AdtechReportModel;
-use App\Models\SingleBilanModel;
-use App\Models\Mail\ReportModel;
-use App\Models\Adrun\AdrunReportModel;
-
+use Illuminate\Console\Command;
 use App\Console\Commands\adrun\Advertiser;
 use App\Console\Commands\Adrun\Campaign;
-use App\Console\Commands\Adrun\CampaignEndReport;
+use App\Models\Adrun\AdrunDashboardSynchronizationModel;
+use App\Models\Mail\ReportModel;
 
 class Dashboard extends Command
 {
@@ -24,6 +19,7 @@ class Dashboard extends Command
      */
     protected $signature = 'adrun:dashboardSync';
     
+    private static $_instance;
 
     /**
      * The console command description.
@@ -41,7 +37,15 @@ class Dashboard extends Command
     {
         parent::__construct();
     }
-
+    
+    public static function getInstance()
+    {
+        if (is_null(self::$_instance)) {
+            self::$_instance = new self;
+        }
+        return self::$_instance;
+    }
+    
     /**
      * Execute the console command.
      *
@@ -49,12 +53,13 @@ class Dashboard extends Command
      */
     public function handle()
     {
-        
         $time        = (int) Carbon::now()->format('i');
-        $report_time = date("H:i"); 
+        $report_time = date("H:i");
+        $sync_time   = date("i");
         
         Advertiser::getInstance()->handle();
-        Campaign::getInstance()->handle();
+        $campaigns = Campaign::getInstance()->handle();
+        //AdrunDashboardSynchronizationModel::getInstance()->action($campaigns);
         
         if($report_time === '12:00' || $report_time === '00:00'):
             
@@ -65,12 +70,11 @@ class Dashboard extends Command
             
         endif;
         
-//        if($report_time === '02:00'):
-//            
-//            CampaignEndReport::getInstance()->handle();
-//            
-//        endif;
-        
+        if( $sync_time === '15' || $sync_time === '30' || $sync_time === '45' || $sync_time === '05'):
+            
+            AdrunDashboardSynchronizationModel::getInstance()->action($campaigns);
+            
+        endif;
         
         
     }

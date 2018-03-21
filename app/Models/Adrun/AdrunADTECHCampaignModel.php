@@ -72,5 +72,16 @@ class AdrunADTECHCampaignModel extends Model
         
     }
     
+    public function deleteCampaignById($campaign)
+    {
+        
+        $params = array ( "arg0" => $campaign );
+        
+        $Campaign = $this->client->deleteCampaign($params);
+        
+        return $Campaign;
+        
+    }
+    
     
 }

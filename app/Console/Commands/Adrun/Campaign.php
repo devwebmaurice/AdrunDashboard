@@ -60,8 +60,12 @@ class Campaign extends Command
         //Update time format
         //AdrunCampaignModel::getInstance()->setADRUNCampaignTime();
         
-        $ADRUN_campaigns  = AdrunCampaignModel::getInstance()->getADRUNCampaignIDList();
-        $ADTECH_campaigns = AdrunADTECHCampaignModel::getInstance()->getADTECHCampaignIDList()->return;;
+        $ADRUN_campaigns       = AdrunCampaignModel::getInstance()->getADRUNCampaignIDList();
+        $ADTECH_campaigns      = AdrunADTECHCampaignModel::getInstance()->getADTECHCampaignIDList()->return;
+        
+        $campaigns             = [ ];
+        $campaigns['adrun']    = $ADRUN_campaigns;
+        $campaigns['adtech']   = $ADTECH_campaigns;
         
         $total_adrun_campaign  = count( $ADRUN_campaigns );
         $total_adtech_campaign = count( $ADTECH_campaigns );
@@ -89,6 +93,10 @@ class Campaign extends Command
                         echo PHP_EOL ."CAMPAIGN: {$arr["return"]->name}" . PHP_EOL;
                         flush();
                         
+                    else:  
+                        
+                        AdrunADTECHCampaignModel::getInstance()->deleteCampaignById($campaign);
+                    
                     endif;
                     
                 endif;
@@ -97,6 +105,8 @@ class Campaign extends Command
             
             
         endif;
+        
+        return $campaigns;
         
     }
 }

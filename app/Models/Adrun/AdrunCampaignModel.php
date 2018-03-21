@@ -133,7 +133,7 @@ class AdrunCampaignModel extends Model
     {
         
         $campaigns = DB::table($this->tbl_campaign.' AS c')
-            ->select('c.id AS id','c.id_adtech','c.adrunStartDate','c.adrunEndDate')
+            ->select('c.id AS id','c.id_adtech','c.adrunStartDate','c.adrunEndDate','c.lastModifiedAt')
             ->orderBy('c.id', 'desc')
             ->get();
         
@@ -334,6 +334,17 @@ class AdrunCampaignModel extends Model
         return $campaign;
     }
     
+    public function getADRUNCampaignByADTECHID($id)
+    { 
+        //To change table name
+        $campaign = DB::table($this->tbl_campaign.' AS c')
+            ->join($this->tbl_advertiser.' AS a', 'c.advertiserId', '=', 'a.id_adtech')
+            ->select('a.id_adtech AS aid_adtech','c.id_adtech AS cid_adtech','c.name AS cname','a.name AS aname','c.description AS cdescription','c.adrunStartDate AS start','c.adrunEndDate AS end','a.*','c.*')
+            ->where('c.id_adtech', '=', $id)->first();
+        
+        return $campaign;
+    }
+    
     public function getADRUNSlaveCampaignByMID($mid)
     {
         $campaigns = DB::table($this->tbl_campaign.' AS c')
@@ -392,6 +403,60 @@ class AdrunCampaignModel extends Model
         DB::table($this->tbl_campaign.' AS c')
             ->where('id', $id)
             ->update(['download' => $status]);
+        
+    }
+    
+    public function deleteADRUNCampaign($id) 
+    {
+        DB::table($this->tbl_campaign)->where('id', $id)->delete();
+        
+    }
+    
+    public function SYNCADRUNCampaign($id,$data) 
+    {   
+        
+        $campaign       = $data->return;
+        $format         = "Y-m-d H:i:s"; //or something else that date() accepts as a format
+        $placement      = (isset($campaign->placementIdList)) ? serialize($campaign->placementIdList) : "";
+        $adrunEndDate   = date_format(date_create($campaign->absoluteEndDate), $format); 
+        $adrunStartDate = date_format(date_create($campaign->absoluteStartDate), $format);
+        
+        DB::table( $this->tbl_campaign )
+            ->where('id', $id)
+            ->update([
+                'id_adtech'                   => $campaign->id, 
+                'name'                        => $campaign->name,
+                'absoluteEndDate'             => $campaign->absoluteEndDate, 
+                'absoluteEndTimestamp'        => $campaign->absoluteEndTimestamp,
+                'adrunEndDate'                => $adrunEndDate, 
+                'absoluteStartDate'           => $campaign->absoluteStartDate,
+                'absoluteStartTimestamp'      => $campaign->absoluteStartTimestamp, 
+                'adrunStartDate'              => $adrunStartDate,
+                'archiveDate'                 => $campaign->archiveDate, 
+                'archiveStatus'               => $campaign->archiveStatus,
+                'advertiserId'                => $campaign->advertiserId, 
+                'customerId'                  => $campaign->customerId,
+                'placementIdList'             => $placement,
+                'bannerTimeRangeList'         => serialize($campaign->bannerTimeRangeList), 
+                'priority'                    => $campaign->priority,
+                'campaignFeatures'            => serialize($campaign->campaignFeatures), 
+                'campaignFrequencyCategory'   => $campaign->campaignFrequencyCategory,
+                'campaignTypeCategoryId'      => $campaign->campaignTypeCategoryId,
+                'campaignTypeId'              => $campaign->campaignTypeId, 
+                'categoryId'                  => $campaign->categoryId,
+                'dateRangeList'               => serialize($campaign->dateRangeList), 
+                'description'                 => $campaign->description,
+                'extId'                       => $campaign->extId, 
+                'statusTypeId'                => $campaign->statusTypeId,
+                'treeTypeId'                  => $campaign->treeTypeId,
+                  'natureType'                  => $campaign->natureType,
+                  'masterCampaignId'            => $campaign->masterCampaignId,
+                'rateTypeId'                  => $campaign->rateTypeId,
+                'createdAt'                   => $campaign->createdAt, 
+                'createdBy'                   => $campaign->createdBy,
+                'lastModifiedBy'              => $campaign->lastModifiedBy, 
+                'lastModifiedAt'              => $campaign->lastModifiedAt
+                    ]);
         
     }
     
